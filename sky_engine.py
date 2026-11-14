@@ -273,6 +273,9 @@ def crescent_table(start: date, end: date, place: dict | None = None, days_befor
     t_set = ts.tt_jd(s_tt)
     alt_set, _, dist_set = obs.at(t_set).observe(moon).apparent().altaz()
     moon_alt_set = alt_set.degrees
+    # topocentric elongation at sunset (used by the Neo-MABIMS rule: altitude 3 deg, elongation 6.4 deg)
+    elong_set_topo = obs.at(t_set).observe(sun).apparent().separation_from(
+        obs.at(t_set).observe(moon).apparent()).degrees
     # Skyfield's moonset: centre at -(34' refraction + apparent radius) on an airless altitude.
     moon_horizon = -(34.0 / 60.0) - np.degrees(np.arcsin(MOON_RADIUS_KM / dist_set.km))
     # Moon sets after the Sun if it is above its setting altitude at sunset and the next moonset
@@ -325,7 +328,7 @@ def crescent_table(start: date, end: date, place: dict | None = None, days_befor
         "lag_min": np.round(lag_days * 1440, 1),
         "best_utc": [t.utc_datetime() for t in t_best],
         "age_h": np.round((best_tt - c_tt) * 24, 2),
-        "moon_alt_sunset": np.round(moon_alt_set, 3),
+        "moon_alt_sunset": np.round(moon_alt_set, 3), "elong_sunset_topo": np.round(elong_set_topo, 3),
         "arcl": np.round(arcl, 4), "arcv": np.round(arcv, 4), "daz": np.round(daz, 4),
         "w": np.round(w, 4), "q": np.round(q, 4),
         "arcl_topo": np.round(arcl_t, 4), "arcv_topo": np.round(arcv_t, 4), "w_topo": np.round(w_t, 4),

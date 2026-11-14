@@ -3,16 +3,20 @@
 The Islamic calendar for **Sunni or Shia** practice, from NASA JPL astronomy (DE440s via Skyfield).
 
 - **A Sunni / Shia switch** sets the holy days, the default calendar and sighting rule, and the prayer-time methods.
-- **Four calendars:**
+- **Seven calendars:**
   - **Umm al-Qura · أم القرى**, the official Saudi calendar. It uses the published table for 1343–1500 AH and the current rule computed from JPL elsewhere. It matches the table in 932 of 936 months since 1423 AH.
-  - **Crescent sighting · رؤية الهلال**. Months begin after the evening on which the crescent is predicted visible from Mecca, Najaf, Qom or your own place, by the Yallop or Odeh models, with the naked eye or with optical aid.
+  - **Crescent sighting · رؤية الهلال**. Months begin after the evening on which the crescent passes the chosen rule, seen from Mecca, from your own place or from one of 21 cities. The rules are Yallop, Odeh, Neo-MABIMS, wujud al-hilal and conjunction.
+  - **Unified Hijri · الموحد** (Istanbul 2016: 5° + 8° anywhere on Earth), used by Turkey's Diyanet and by Muhammadiyah. It matches Diyanet's published calendar in 184 of 186 months.
   - **Tabular · الحسابي**, standard (Kuwaiti) or Fatimid/Bohra.
   - **Solar Hijri · الهجري الشمسي** of Iran and Afghanistan, with Nowruz from the JPL equinox.
+  - **Hijri Shamsi**, the Ahmadiyya solar calendar.
+  - **Julian (Rumi)**, with the Syriac month names; Hıdırellez and other Alevi and Alawite days are fixed in it.
+- **Traditions page:** the Sunni schools and movements, the Shia branches, and the Ibadis, Ahmadis, Quranists, Sufis and Kharijites, each listed under the calendar it uses, with a **Use** button that sets the app to model that practice.
 - **Prayer times:**
   - Sunni methods: MWL, ISNA, Egypt, Umm al-Qura, Karachi, Diyanet, the Gulf states, JAKIM and others, with Shafi'i or Hanafi Asr.
   - Shia methods: Leva Institute of Qum, and Tehran, with Ja'fari Maghrib and midnight.
   - Plus imsak, the qibla compass, and the Moon.
-- **Pages:** Today, Month, Year & holy days (with .ics and .csv downloads), Prayer times, Crescent, Compare, How it works.
+- **Pages:** Today, Traditions, Month, Year & holy days (with .ics and .csv downloads), Prayer times, Crescent, Compare, How it works.
 - **Sources:** each holy day opens a short sourced history (48 entries), and both traditions are presented in their own terms.
 - **Location:** found automatically (the browser asks once). Proper nouns are also shown in Arabic script (Persian for the solar months). The design follows early Islamic (Umayyad and Abbasid) art.
 
@@ -35,4 +39,4 @@ streamlit run app.py
 
 Dates run from 1850 to 2149. Put de440.bsp in `ephem/` for the prayer times and the Moon to reach 1550–2650. The Mecca crescent table then needs rebuilding with `python tools/build_tables.py`.
 
-The Arabic fonts are subsets of Noto Kufi Arabic and Noto Naskh Arabic, © The Noto Project Authors, under the SIL Open Font License (`assets/fonts/`).
+The Americas coastline table and the transcription of Diyanet's calendar come from the libmuslim project (Apache-2.0); see `THIRD_PARTY.md`. The Arabic fonts are subsets of Noto Kufi Arabic and Noto Naskh Arabic, © The Noto Project Authors, under the SIL Open Font License (`assets/fonts/`).

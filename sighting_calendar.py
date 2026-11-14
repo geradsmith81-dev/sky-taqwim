@@ -35,16 +35,24 @@ CRITERIA = {
     "odeh_A": "Odeh zone A: visible to the naked eye (V >= 5.65)",
     "odeh_B": "Odeh A-B: visible with optical aid, may be seen by naked eye (V >= 2.00)",
     "odeh_C": "Odeh A-C: optical aid accepted, e.g. telescope sightings (V >= -0.96)",
+    "mabims": "Neo-MABIMS 2021 (Brunei, Indonesia, Malaysia, Singapore): Moon at least 3 deg high and 6.4 deg "
+              "from the Sun at sunset (calculated, topocentric)",
+    "wujud": "Wujud al-hilal: new moon before sunset and the Moon sets after the Sun (calculated)",
+    "conjunction": "New moon (conjunction) before sunset on the 29th (calculated)",
 }
 DEFAULT_CRITERION = "yallop_B"
 CRITERIA_SHORT = {
     "yallop_A": "Yallop A", "yallop_B": "Yallop B", "yallop_C": "Yallop C",
     "odeh_A": "Odeh A", "odeh_B": "Odeh B", "odeh_C": "Odeh C",
+    "mabims": "Neo-MABIMS", "wujud": "wujud al-hilal", "conjunction": "conjunction",
 }
 
 # Reference places (name, Arabic name, coordinates of the main mosque or shrine or city centre)
 PRESET_PLACES = [
     {"name": "Mecca", "name_ar": "مكة المكرمة", "lat": 21.4225, "lon": 39.8262, "tz": "Asia/Riyadh", "elev": 277},
+    {"name": "Muscat", "name_ar": "مسقط", "lat": 23.5880, "lon": 58.3829, "tz": "Asia/Muscat", "elev": 15},
+    {"name": "Sanaa", "name_ar": "صنعاء", "lat": 15.3694, "lon": 44.1910, "tz": "Asia/Aden", "elev": 2250},
+    {"name": "Damascus", "name_ar": "دمشق", "lat": 33.5113, "lon": 36.3066, "tz": "Asia/Damascus", "elev": 690},
     {"name": "Medina", "name_ar": "المدينة المنورة", "lat": 24.4672, "lon": 39.6112, "tz": "Asia/Riyadh", "elev": 608},
     {"name": "Najaf", "name_ar": "النجف", "lat": 31.9961, "lon": 44.3146, "tz": "Asia/Baghdad", "elev": 60},
     {"name": "Karbala", "name_ar": "كربلاء", "lat": 32.6165, "lon": 44.0324, "tz": "Asia/Baghdad", "elev": 30},
@@ -67,6 +75,14 @@ PRESET_PLACES = [
 PRESETS_BY_NAME = {p["name"]: p for p in PRESET_PLACES}
 
 
+def _conj_before_sunset(row: dict) -> bool:
+    c, s_ = row.get("conj_utc"), row.get("sunset_utc")
+    try:
+        return c is not None and s_ is not None and c == c and s_ == s_ and c < s_
+    except TypeError:
+        return False
+
+
 def visible(row: dict, criterion: str) -> bool:
     """True if the crescent in this table row passes `criterion` (False if q/V are undefined)."""
     q, v = row["q"], row["v"]
@@ -78,6 +94,16 @@ def visible(row: dict, criterion: str) -> bool:
         if v != v:
             return False
         return v >= {"odeh_A": 5.65, "odeh_B": 2.0, "odeh_C": -0.96}[criterion]
+    if criterion == "mabims":
+        alt, el = row.get("moon_alt_sunset"), row.get("elong_sunset_topo")
+        if alt is None or el is None or alt != alt or el != el:
+            return False
+        return _conj_before_sunset(row) and alt >= 3.0 and el >= 6.4
+    if criterion == "wujud":
+        lag = row.get("lag_min")
+        return _conj_before_sunset(row) and lag is not None and lag == lag and lag > 0
+    if criterion == "conjunction":
+        return _conj_before_sunset(row)
     raise ValueError(f"unknown criterion {criterion!r}")
 
 

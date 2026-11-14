@@ -134,3 +134,51 @@ The precomputed Mecca table holds 18,561 evenings (one before to three after eac
 - **Solar Hijri before 1925:** dates before the Iranian law of 1925 are proleptic, computed by the same rule; Afghanistan adopted the calendar in 1922.
 - **Official prayer timetables:** the prayer times were compared with other algorithms, not with timetables published by national authorities, which often add precautionary minutes.
 - **Dates outside 1850–2149** need the larger de440.bsp (1550–2650) in the ephem folder; the Mecca crescent table and data/seasons.csv would then need rebuilding (tools/build_tables.py).
+
+
+## 8. Unified Hijri Calendar (Istanbul 2016) — against Diyanet and the North American and European councils
+
+The month starts 1850–2149 were computed by a global search (`unified_hijri_calendar.py`). Clause A tries one
+point per degree of latitude, 60 S to 60 N, where the Sun sets at 00:00 UT. Clause B tries the westernmost point
+of the Americas mainland at each latitude, 53 S to 71 N, with dawn in Wellington at the Sun 18 deg below. A point
+passes when the conjunction comes before its sunset, its topocentric unrefracted altitude is at least 5 deg and
+its geocentric elongation at least 8 deg.
+
+Over 3,711 new moons, clause A decided 3,392 starts and clause B 319.
+
+| Check | Months | Agree |
+|---|---|---|
+| Diyanet's published calendar, 1 Jumada II 1442 – 1 Dhu al-Qa'dah 1457 (2021-01-14 – 2035-12-31), start and Hijri label | 186 | **184** |
+| Fiqh Council of North America / ECFR announcements under the 5 + 8 rule (Shawwal 1441, 1444, 1445, 1446; Ramadan 1446) and Ramadan 1428 | 6 | **6** |
+
+Notes on the table:
+- **Diyanet's calendar** is the union of two Diyanet lists, from mobil.diyanet.gov.tr (2021–2028) and
+  vakithesaplama.diyanet.gov.tr (2027–2035). The transcription is the one in the libmuslim project's
+  `tests/test_hijri.c` (Apache-2.0), retrieved 2026-10-17.
+- **The two misses** are 1 Dhu al-Qa'dah 1442 (Diyanet 2021-06-11, here a day later) and 1 Dhu al-Qa'dah 1444
+  (Diyanet 2023-05-21, here a day earlier, decided by clause B at 55 N on the Alaskan coast with the Moon 5.3 deg
+  high and 8.1 deg from the Sun). They are the same two months, missed the same way, as in libmuslim's own
+  search. The published rule leaves the frames of the angles and the search open, so these borderline evenings
+  cannot be settled.
+- **Shawwal 1428** (2007): FCNA then used an earlier rule, the conjunction before 12:00 GMT, and announced
+  13 October 2007. The 5 + 8 rule gives 12 October, so this month is not counted.
+
+## 9. Neo-MABIMS and the other calculated sighting rules
+
+The Neo-MABIMS rule uses the topocentric unrefracted altitude of the Moon's centre at sunset (at least 3 deg)
+and the topocentric elongation at sunset (at least 6.4 deg), after the conjunction. A column for that elongation
+was added to the crescent tables, and the Mecca table was rebuilt with it.
+- **Checked against a source:** for Jakarta, 1 Shawwal 1447 comes out as 21 March 2026. Indonesia's Ministry
+  of Religious Affairs (Kemenag) said on 19 March 2026 that no province met the MABIMS criteria that evening (VOI, citing ANTARA, 'Kemenag: Height of the Crescent in Indonesia Has Not Met the MABIMS Criteria', voi.id/en/amp/565456).
+- **Computed only, not checked here against an announcement:** 1 Ramadan 1447 = 19 February 2026,
+  1 Shawwal 1446 = 31 March 2025 and 1 Shawwal 1445 = 10 April 2024.
+
+## 10. Hijri Shamsi (Ahmadiyya) and Julian
+
+- **Hijri Shamsi:** 1 January 2000 = 1 Sulh 1379 HS and 15 June 2008 = 15 Ihsan 1387 HS. This agrees with
+  AhmadiPedia, 'Hijri–Shamsi Calendar' (ahmadipedia.org/content/scheme/14: 2000 = 1379 HS) and with Wikipedia's article
+  on Mirza Bashir-ud-Din Mahmood Ahmad (2008 = 1387 HS).
+- **Julian:** 23 April (Julian) falls on 6 May (Gregorian) in every year from 1900 to 2099, the date of
+  Hıdırellez. The Alawite Nawruz (4 Nisan) falls on 17 April and Mihrajan (16 Tishrin al-Awwal) on
+  29 October (2026), matching the dates in Friedman 2010, ch. 2. 14 November 2026 = 1 Tishrin al-Thani (November) 2026 by the Julian reckoning. The conversion is
+  the standard Julian Day Number formula.

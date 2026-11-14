@@ -19,6 +19,7 @@ import holiday_history as hh  # noqa: E402
 import holidays as hol  # noqa: E402
 import prayer_times as pt  # noqa: E402
 import qibla as qb  # noqa: E402
+import sects  # noqa: E402
 import sighting_calendar as sc  # noqa: E402
 import sky_engine as se  # noqa: E402
 import tabular_calendar as tc  # noqa: E402
@@ -82,9 +83,9 @@ def hijri_text(h, arabic=True) -> str:
         return "<span class='tq-muted'>outside the range of this calendar</span>"
     out = esc(str(h))
     if arabic:
-        solar = getattr(h, "calendar", "lunar") == "solar" or type(h).__name__ == "SolarDay"
+        c = "solar" if type(h).__name__ == "SolarDay" else getattr(h, "calendar", "lunar")
         a = h.arabic() if callable(h.arabic) else h.arabic
-        out += f" <span class='tq-ar' lang='{'fa' if solar else 'ar'}' dir='rtl'>{esc(a)}</span>"
+        out += f" <span class='tq-ar' lang='{ {'solar': 'fa', 'ahmadi': 'ur'}.get(c, 'ar') }' dir='rtl'>{esc(a)}</span>"
     return out
 
 
@@ -161,7 +162,7 @@ def year_picker(view, ctx, key: str) -> int:
     years = view.years()
     cur = view.year_of(ctx["today"]) or years[len(years) // 2]
     cur = min(max(cur, years[0]), years[-1])
-    return st.selectbox(f"{'Solar Hijri' if view.solar else 'Hijri'} year", years, index=years.index(cur),
+    return st.selectbox(f"{'Hijri' if view.lunar else view.name} year", years, index=years.index(cur),
                         key=f"{key}_{view.key}", format_func=lambda y: year_label(view, y))
 
 
@@ -191,7 +192,7 @@ def render_today(ctx):
                 f"<div class='tq-muted'>{bi(place['label'], place.get('ar', ''))} · local time {now:%H:%M}</div>")
         if after_sunset:
             body += ("<div class='tq-obs'>The sun has set: the next Islamic day has begun "
-                     "(the solar Hijri day changes at midnight).</div>")
+                     "(the solar calendars change day at midnight).</div>")
         st.html(card(ttl("Today", "اليوم"), body))
         for k in cv.ALL:
             v = ctx["views"][k]
@@ -201,7 +202,7 @@ def render_today(ctx):
             if h is None:
                 st.html(card(title, "<span class='tq-muted'>Outside the range of this calendar.</span>"))
                 continue
-            line = f"<div class='tq-big'>{esc(h)}</div><div class='tq-ar-big' lang='{'fa' if v.solar else 'ar'}' dir='rtl'>{esc(h.arabic())}</div>"
+            line = f"<div class='tq-big'>{esc(h)}</div><div class='tq-ar-big' lang='{v.lang}' dir='rtl'>{esc(h.arabic())}</div>"
             if not v.solar:
                 ep = an.MONTH_EPITHETS.get(h.month)
                 if ep:
@@ -322,14 +323,14 @@ def render_month(ctx):
         st.rerun()
 
     en, ar = view.month_name(m.month)
-    num = an.to_persian_digits(m.year) if view.solar else an.to_arabic_digits(m.year)
+    num = view.digits(m.year)
     extra = ""
     if not view.solar:
         ep = an.MONTH_EPITHETS.get(m.month)
         if ep:
             extra = f"<div class='tq-obs'>{bi(ep[0], ep[1])}"
             extra += " · one of the four sacred months (Qur'an 9:36)</div>" if an.is_sacred_month(m.month) else "</div>"
-    st.html(f"<div class='tq-big'>{esc(en)} {m.year} {view.era} <span class='tq-ar-big' lang='{'fa' if view.solar else 'ar'}' "
+    st.html(f"<div class='tq-big'>{esc(en)} {m.year} {view.era} <span class='tq-ar-big' lang='{view.lang}' "
             f"dir='rtl'>{esc(ar)} {num}</span></div>{extra}"
             f"<div class='tq-muted'>{bi(view.name, view.name_ar)} ({esc(view.detail)}) · {m.start:%d %b %Y} – "
             f"{m.end:%d %b %Y} · {m.length} days</div>")
@@ -371,7 +372,7 @@ def render_month(ctx):
     def hd(h):
         if h is None:
             return ""
-        dig = an.to_persian_digits(h.day) if view.solar else an.to_arabic_digits(h.day)
+        dig = view.digits(h.day)
         return f"<span class='tq-hd'>{dig} <small>{h.day}</small></span>"
 
     if device.phone():
@@ -382,7 +383,7 @@ def render_month(ctx):
             cls += " tq-ram" if is_ram and d.weekday() != FRIDAY else ""
             cls += " tq-today" if d == today else ""
             rows.append(f"<tr><td class='{cls}' style='width:34%'><span class='tq-civ'>{h.day}</span> "
-                        f"<span class='tq-ar'>{an.to_arabic_digits(h.day) if not view.solar else an.to_persian_digits(h.day)}</span><br>"
+                        f"<span class='tq-ar'>{view.digits(h.day)}</span><br>"
                         f"<span class='tq-muted'>{an.WEEKDAY_EN[d.weekday()][:3]} {d:%d %b}</span></td>"
                         f"<td class='{cls}'>{cell_lines(d)}</td></tr>")
         st.html("<table class='tq-list'>" + "".join(rows) + "</table>")
@@ -408,7 +409,7 @@ def render_month(ctx):
                 + "</tr>" + rows + "</table>")
     st.html(theme.legend(set(h.kind for hs in hols.values() for h in hs) or None)
             + "<div class='tq-muted' style='margin-top:.3rem'>Large numbers: the civil date. Corner: the "
-            f"{'solar ' if view.solar else ''}Hijri day. Click a holy day's name for a short history. "
+            f"{'Hijri' if view.lunar else view.name} day. Click a holy day's name for a short history. "
             + ("Each Islamic day begins at the sunset before." if not view.solar else "") + "</div>")
     _month_began(ctx, view, m)
 
@@ -449,11 +450,16 @@ def _month_began(ctx, view, m):
                 qtxt = f"{info['q']:+.3f} ({info['yallop']})"
                 vtxt = f"{info['v']:+.2f} ({info['odeh']})"
                 vd = "visible by the rule in use" if visible(info, ctx["crit"]) else "not visible by the rule in use"
+            vd = "passes the rule in use" if visible(info, ctx["crit"]) else "does not pass the rule in use"
+            alt0, el0 = info.get("moon_alt_sunset"), info.get("elong_sunset_topo")
             rows.append(f"<tr><td>{e:%a %d %b}</td><td>{qtxt}</td><td>{vtxt}</td><td>{info['lag_min']:.0f}</td>"
-                        f"<td>{info['age_h']:.1f}</td><td>{info['arcl']:.1f}°</td><td>{esc(vd)}</td></tr>")
+                        f"<td>{info['age_h']:.1f}</td>"
+                        f"<td>{'-' if alt0 is None or alt0 != alt0 else f'{alt0:.1f}°'}</td>"
+                        f"<td>{'-' if el0 is None or el0 != el0 else f'{el0:.1f}°'}</td><td>{esc(vd)}</td></tr>")
         if rows:
             body += ("<table class='tq-table'><tr><th>Evening</th><th>Yallop q</th><th>Odeh V</th><th>Moon sets after "
-                     "the Sun (min)</th><th>Moon age (h)</th><th>Elongation</th><th>Verdict</th></tr>"
+                     "the Sun (min)</th><th>Moon age (h)</th><th>Moon height at sunset</th><th>Elongation at sunset</th>"
+                     "<th>Verdict</th></tr>"
                      + "".join(rows) + "</table>")
         u = (m.extra or {}).get("ummalqura_start")
         if u:
@@ -474,6 +480,25 @@ def _month_began(ctx, view, m):
                 f"<div style='margin:.4rem 0'>{cyc}</div>"
                 f"<div class='tq-muted'>Epoch: {esc(tc.VARIANTS[var].get('epoch_note', ''))}.</div>")
         st.html(card(ttl("The 30-year cycle", "الدورة الثلاثينية"), body))
+    elif view.key == cv.UNIFIED:
+        body = f"<div>{esc(m.note)}.</div>"
+        u = ctx["views"][cv.UMMALQURA].get_month(m.year, m.month)
+        if u is not None:
+            body += f"<div class='tq-muted'>Umm al-Qura begins this month on {u.start:%a %d %b %Y}; the unified start is {rel((m.start - u.start).days, 'Umm al-Qura')}.</div>"
+        body += ("<div class='tq-muted'>Clause A: the Moon at least 5 deg high and 8 deg from the Sun at a sunset "
+                 "anywhere before 00:00 UT. Clause B: the same on the Americas mainland after 00:00 UT, if the new "
+                 "moon came before dawn in Wellington. The same day is the 1st everywhere on Earth.</div>")
+        st.html(card(ttl("How this month began", "التقويم الموحد"), body))
+    elif view.key in (cv.AHMADI, cv.JULIAN):
+        if view.key == cv.AHMADI:
+            body = ("<div>Hijri Shamsi months have the same days as the Gregorian months; the year is the Gregorian "
+                    "year minus 621, counted from the Hijra in solar years. Ramadan and the Eids still follow the "
+                    "lunar months.</div>")
+        else:
+            body = (f"<div>{esc(m.note)}.</div><div class='tq-muted'>The Julian year has a leap day every fourth "
+                    "year without exception, so it falls one day further behind the Gregorian calendar in 2100. "
+                    "Days run from midnight.</div>")
+        st.html(card(ttl("About this calendar", "عن هذا التقويم"), body))
     else:
         body = f"<div>{esc(m.note)}.</div>" if m.note else ""
         body += ("<div class='tq-muted'>Months 1–6 have 31 days, 7–11 have 30, and Esfand 29 (30 in a leap year). "
@@ -748,6 +773,86 @@ def render_compare(ctx):
         cs = Counter(ys_s)
         st.caption("1 Ramadan by sighting minus Umm al-Qura over these years: "
                    + ", ".join(f"{k:+d} day{'s' if abs(k) != 1 else ''}: {cs[k]} years" for k in sorted(cs)) + ".")
+
+
+# ----------------------------------------------------------------------------------------------
+# Traditions
+# ----------------------------------------------------------------------------------------------
+def apply_preset(preset: dict, title: str):
+    """Button callback: set the app's settings to model one community's practice."""
+    b = preset["branch"]
+    ss = st.session_state
+    ss["branch"] = b
+    ss[f"cal_{b}"] = preset["calendar"]
+    for k, key in (("ref", f"sref_{b}"), ("crit", f"crit_{b}"), ("tabular", "tab_var"),
+                   ("method", f"method_{b}"), ("asr", "asr"), ("imams", "imams")):
+        if k in preset:
+            ss[key] = preset[k]
+    ss["_preset_msg"] = title
+
+
+def _preset_text(pr: dict) -> str:
+    parts = [cv.BRANCH_NAME[pr["branch"]][0] + " holy days", cv.NAME[pr["calendar"]]]
+    if pr["calendar"] == cv.SIGHTING:
+        ref = {"Mecca": "from Mecca", "local": "from your own place"}.get(pr.get("ref"), f"from {pr.get('ref')}")
+        parts.append(f"{ref}, {sc.CRITERIA_SHORT.get(pr.get('crit', ''), '')}")
+    if pr.get("tabular") == "fatimid":
+        parts.append("Fatimid cycle")
+    if pr.get("method"):
+        parts.append("prayer times: " + pt.METHODS[pr["method"]]["label"])
+    if pr.get("asr") == "hanafi":
+        parts.append("Hanafi Asr")
+    return " · ".join(parts)
+
+
+def render_traditions(ctx):
+    msg = st.session_state.pop("_preset_msg", None)
+    if msg:
+        st.success(f"Settings now model: {msg}. Open Today, Month or Year to see the dates.")
+    st.html("<div class='tq-muted'>The schools, branches and movements of Islam, listed under the calendar each "
+            "uses to fix its months. Press <b>Use</b> to set the app to model that practice: the tradition's holy "
+            "days, the calendar, where and how the crescent is looked for, and the usual prayer-time method. "
+            "Practice varies within every group, so these are models of the main practice named. Groups outside "
+            "the Sunni and Shia lists are shown with the nearer list of holy days.</div>")
+    groups = {g for g, _ in sects.GROUPS}
+    byc = sects.by_calendar()
+    phone = device.phone()
+    n = 0
+    for cal, cal_title in sects.CAL_ORDER:
+        rows = byc.get(cal, [])
+        if not rows:
+            continue
+        st.html(f"<h3 style='margin:.9rem 0 .1rem 0'>{bi(cal_title, cv.NAME_AR[cal])}</h3>"
+                f"<div class='tq-muted' style='margin-bottom:.3rem'>{esc(cv.HELP[cal])}</div>")
+        for s_, label, preset in rows:
+            n += 1
+            parent = f" <span class='tq-muted'>({esc(s_['parent'])})</span>" if s_.get("parent") else ""
+            body = (f"<div class='tq-card' style='margin-bottom:.35rem;padding:.55rem .8rem'>"
+                    f"<b>{bi(s_['name'], s_['ar'])}</b>{parent} · <span class='tq-muted'>{esc(s_['group'])}</span>"
+                    f"<div>{esc(label)}</div>"
+                    f"<div class='tq-muted' style='font-size:.82rem'>{esc(_preset_text(preset))}</div></div>")
+            if phone:
+                st.html(body)
+                st.button("Use", key=f"use_{n}", on_click=apply_preset, args=(preset, f"{s_['name']} — {label}"),
+                          width="stretch")
+            else:
+                c1, c2 = st.columns([6, 1], vertical_alignment="center")
+                c1.html(body)
+                c2.button("Use", key=f"use_{n}", on_click=apply_preset, args=(preset, f"{s_['name']} — {label}"),
+                          width="stretch")
+    none = [s_ for s_ in sects.SECTS if not s_["uses"]]
+    if none:
+        st.html("<h3 style='margin:.9rem 0 .1rem 0'>Without a calendar of their own · بلا تقويم خاص</h3>"
+                + "".join(f"<div class='tq-card' style='margin-bottom:.35rem;padding:.55rem .8rem'><b>"
+                          f"{bi(s_['name'], s_['ar'])}</b> · <span class='tq-muted'>{esc(s_['group'])}</span>"
+                          f"<div>{esc(s_['how'])}</div></div>" for s_ in none))
+    st.html("<h3 style='margin:.9rem 0 .1rem 0'>The traditions in detail · تفصيل</h3>")
+    for g, g_ar in sects.GROUPS:
+        for s_ in [x for x in sects.SECTS if x["group"] == g and x["uses"]]:
+            with st.expander(f"{s_['name']} · {s_['ar']}  ({g})"):
+                st.markdown(f"**Where:** {s_['where']}")
+                st.markdown(s_["how"])
+                st.caption(f"Sources: {s_['src']}")
 
 
 # ----------------------------------------------------------------------------------------------

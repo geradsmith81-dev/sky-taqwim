@@ -47,6 +47,22 @@ SOLAR_MONTHS = [
     ("Bahman", "بهمن"),
     ("Esfand", "اسفند"),
 ]
+# Ahmadiyya Hijri Shamsi months (same lengths as the Gregorian months), transliteration and Urdu script;
+# order as in The Review of Religions (Ahmadiyya), July 2008: ... Zuhur, Tabuk, Ikha, Nabuwwat, Fatah
+AHMADI_MONTHS = [
+    ("Sulh", "صلح"), ("Tabligh", "تبلیغ"), ("Aman", "امان"), ("Shahadat", "شہادت"), ("Hijrat", "ہجرت"),
+    ("Ihsan", "احسان"), ("Wafa", "وفا"), ("Zuhur", "ظہور"), ("Tabuk", "تبوک"), ("Ikha", "اخاء"),
+    ("Nabuwwat", "نبوت"), ("Fatah", "فتح"),
+]
+# Julian (Eastern, 'Rumi') months with their Syriac-derived Arabic names, as used in the Levant and Iraq
+JULIAN_MONTHS = [
+    ("Kanun al-Thani", "كانون الثاني"), ("Shubat", "شباط"), ("Adhar", "آذار"), ("Nisan", "نيسان"),
+    ("Ayyar", "أيار"), ("Huzayran", "حزيران"), ("Tammuz", "تموز"), ("Ab", "آب"), ("Aylul", "أيلول"),
+    ("Tishrin al-Awwal", "تشرين الأول"), ("Tishrin al-Thani", "تشرين الثاني"), ("Kanun al-Awwal", "كانون الأول"),
+]
+CALENDAR_MONTHS = {"lunar": MONTHS, "solar": SOLAR_MONTHS, "ahmadi": AHMADI_MONTHS, "julian": JULIAN_MONTHS}
+ERA = {"lunar": "AH", "solar": "SH", "ahmadi": "HS", "julian": "O.S."}
+
 (MUHARRAM, SAFAR, RABI_I, RABI_II, JUMADA_I, JUMADA_II, RAJAB, SHABAN, RAMADAN, SHAWWAL,
  DHU_AL_QADAH, DHU_AL_HIJJAH) = range(1, 13)
 
@@ -63,11 +79,11 @@ def persian_digits(n) -> str:
 
 
 def month_name(month: int, calendar: str = "lunar") -> str:
-    return (SOLAR_MONTHS if calendar == "solar" else MONTHS)[month - 1][0]
+    return CALENDAR_MONTHS.get(calendar, MONTHS)[month - 1][0]
 
 
 def month_ar(month: int, calendar: str = "lunar") -> str:
-    return (SOLAR_MONTHS if calendar == "solar" else MONTHS)[month - 1][1]
+    return CALENDAR_MONTHS.get(calendar, MONTHS)[month - 1][1]
 
 
 @dataclass(frozen=True, order=True)
@@ -75,7 +91,7 @@ class HDate:
     year: int
     month: int
     day: int
-    calendar: str = "lunar"      # "lunar" (Hijri, AH) or "solar" (Iranian solar Hijri, SH)
+    calendar: str = "lunar"      # "lunar" (AH), "solar" (Iranian SH), "ahmadi" (HS) or "julian" (O.S.)
 
     @property
     def month_name(self) -> str:
@@ -88,7 +104,7 @@ class HDate:
 
     @property
     def era(self) -> str:
-        return "SH" if self.calendar == "solar" else "AH"
+        return ERA.get(self.calendar, "AH")
 
     def __str__(self) -> str:
         return f"{self.day} {self.month_name} {self.year} {self.era}"
@@ -97,6 +113,10 @@ class HDate:
         """'١٤ رمضان ١٤٤٧ هـ'; for the solar calendar Persian digits and 'ه‍.ش.'"""
         if self.calendar == "solar":
             return f"{persian_digits(self.day)} {self.month_ar} {persian_digits(self.year)} ه‍.ش."
+        if self.calendar == "ahmadi":
+            return f"{persian_digits(self.day)} {self.month_ar} {persian_digits(self.year)} ہش"
+        if self.calendar == "julian":
+            return f"{arabic_digits(self.day)} {self.month_ar} {arabic_digits(self.year)} (شرقي)"
         return f"{arabic_digits(self.day)} {self.month_ar} {arabic_digits(self.year)} هـ"
 
 

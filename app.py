@@ -17,6 +17,7 @@ st.set_page_config(page_title="Sky Taqwim · تقويم السماء", page_icon
 
 import calendars as cv  # noqa: E402
 import device  # noqa: E402
+import extra_calendars as xc  # noqa: E402
 import locator  # noqa: E402
 import pages  # noqa: E402
 import places  # noqa: E402
@@ -26,12 +27,14 @@ import solar_hijri_calendar as shc  # noqa: E402
 import tabular_calendar as tc  # noqa: E402
 import theme  # noqa: E402
 import ummalqura_calendar as uq  # noqa: E402
+import unified_hijri_calendar as uh  # noqa: E402
 from zoneinfo import ZoneInfo  # noqa: E402
 
 theme.apply()
 
 PAGES = {
     "Today": ("Today · اليوم", pages.render_today),
+    "Traditions": ("Traditions · المذاهب", pages.render_traditions),
     "Month": ("Month · الشهر", pages.render_month),
     "Year": ("Year & holy days · السنة والمناسبات", pages.render_year),
     "Prayer": ("Prayer times · مواقيت الصلاة", pages.render_prayer),
@@ -62,6 +65,26 @@ def sighting_cal(lat, lon, tz, name, criterion, span):
 @st.cache_resource(show_spinner=False, max_entries=4)
 def solar_cal(rule):
     return shc.SolarHijriCalendar(rule)
+
+
+@st.cache_resource(show_spinner="Reading the Unified Hijri Calendar…", max_entries=1)
+def unified_cal():
+    return uh.UnifiedHijriCalendar()
+
+
+@st.cache_resource(show_spinner=False, max_entries=1)
+def ahmadi_cal():
+    return xc.AhmadiHijriShamsiCalendar()
+
+
+@st.cache_resource(show_spinner=False, max_entries=1)
+def julian_cal():
+    return xc.JulianCalendar()
+
+
+def _idx(key, options, default):
+    """index= for a widget, unless a preset has already put its value in session state."""
+    return {} if key in st.session_state else {"index": list(options).index(default)}
 
 
 # ---------------------------------------------------------------------------------------------- where the user is
@@ -118,7 +141,7 @@ with c0:
                            "sighting rule, and the prayer-time methods. Each can still be changed in the settings.")
 D = cv.DEFAULTS[branch]
 with c1:
-    cal_key = st.radio("Calendar · التقويم", cv.ALL, key=f"cal_{branch}", index=cv.ALL.index(D["calendar"]),
+    cal_key = st.radio("Calendar · التقويم", cv.ALL, key=f"cal_{branch}", **_idx(f"cal_{branch}", cv.ALL, D["calendar"]),
                        horizontal=True, format_func=lambda k: cv.NAME[k],
                        help=" ".join(f"{cv.NAME[k]}: {cv.HELP[k]}" for k in cv.ALL))
 with c2:
@@ -169,11 +192,13 @@ with panel:
 
     st.subheader("Prayer times · مواقيت الصلاة")
     meths = list(pt.methods_for(branch))
-    method = st.selectbox("Calculation method", meths, key=f"method_{branch}", index=meths.index(D["method"]),
+    if st.session_state.get(f"method_{branch}") not in meths:
+        st.session_state.pop(f"method_{branch}", None)
+    method = st.selectbox("Calculation method", meths, key=f"method_{branch}", **_idx(f"method_{branch}", meths, D["method"]),
                           format_func=lambda k: pt.METHODS[k]["label"] + ("" if pt.METHODS[k]["branch"] == branch
                                                                          else f" ({pt.METHODS[k]['branch'].capitalize()})"))
     if branch == "sunni":
-        asr = st.radio("Asr", ["standard", "hanafi"], key="asr", horizontal=True,
+        asr = st.radio("Asr", ["standard", "hanafi"], key="asr", horizontal=True, **_idx("asr", ["standard", "hanafi"], "standard"),
                        format_func=lambda k: {"standard": "Shafi'i, Maliki, Hanbali (shadow = length)",
                                               "hanafi": "Hanafi (shadow = twice the length)"}[k])
     else:
@@ -188,17 +213,24 @@ with panel:
     o_fasts = st.toggle("Recommended fasts" if branch == "sunni" else "Fast days", value=(branch == "sunni"),
                         key=f"fasts_{branch}")
     o_nights = st.toggle("Holy nights", value=True, key=f"nights_{branch}")
-    o_imams = st.toggle("Births and martyrdoms of the Imams", value=True, key="imams") if branch == "shia" else False
+    o_imams = (st.toggle("Births and martyrdoms of the Twelve Imams", key="imams",
+                         **({} if "imams" in st.session_state else {"value": True}))
+               if branch == "shia" else False)
     o_month = st.toggle("First day of each month", value=True, key=f"months_{branch}")
 
     st.subheader("Crescent sighting · رؤية الهلال")
-    rules = cv.SIGHTING_RULES[branch]
-    rule = st.selectbox("Whose sighting counts", list(rules), key=f"srule_{branch}",
-                        index=list(rules).index(D["sighting_rule"]), format_func=lambda k: rules[k][0])
-    crit = st.selectbox("Visibility model", list(sc.CRITERIA), key=f"crit_{branch}_{rule}",
-                        index=list(sc.CRITERIA).index(rules[rule][1]), format_func=lambda k: sc.CRITERIA[k],
-                        help="Yallop 1997 (NAO Technical Note 69) and Odeh 2004 (Experimental Astronomy 18:39–64): "
-                             "how far the Moon must be from the Sun, and how high, for the crescent to be seen.")
+    refs = ["Mecca", "local"] + [q["name"] for q in sc.PRESET_PLACES if q["name"] != "Mecca"]
+    ref = st.selectbox("Where the crescent is looked for", refs, key=f"sref_{branch}", **_idx(f"sref_{branch}", refs, D["ref"]),
+                       format_func=lambda r: {"Mecca": "Mecca", "local": "Your own place (local horizon)"}.get(r, r),
+                       help="Mecca: the first sighting is taken from there (Saudi practice, and the classical Hanafi, "
+                            "Maliki and Hanbali view that one sighting binds all). Your own place: each region its "
+                            "own horizon (the Shafi'i and the Twelver Shia view).")
+    crits = list(sc.CRITERIA)
+    crit = st.selectbox("Rule for the crescent", crits, key=f"crit_{branch}", **_idx(f"crit_{branch}", crits, D["crit"]),
+                        format_func=lambda k: sc.CRITERIA[k] + (f" — {cv.CRIT_NOTES[k]}" if k in cv.CRIT_NOTES else ""),
+                        help="Yallop 1997 (NAO Technical Note 69) and Odeh 2004 (Experimental Astronomy 18:39–64) predict "
+                             "when the crescent can be seen; Neo-MABIMS, wujud al-hilal and the conjunction rule are "
+                             "calculated criteria that do not ask whether it can be seen.")
 
     st.subheader("Other calendars · تقاويم أخرى")
     uq_src = st.selectbox("Umm al-Qura", list(uq.SOURCES), key="uq_src", format_func=lambda k: uq.SOURCES[k])
@@ -211,7 +243,7 @@ with panel:
 # ---------------------------------------------------------------------------------------------- build the views
 today = datetime.now(ZoneInfo(place["tz"])).date()
 opts = {"month_starts": o_month, "imams": o_imams, "fasts": o_fasts, "nights": o_nights}
-sp, sp_name = cv.sighting_place(rule, branch, place)
+sp, sp_name = cv.sighting_place(ref, place)
 if sp is None:
     s_cal = sighting_cal(None, None, None, "Mecca", crit, None)
 else:
@@ -222,11 +254,14 @@ views = {
     cv.SIGHTING: cv.View(cv.SIGHTING, s_cal, branch, opts, f"from {sp_name}, {sc.CRITERIA_SHORT[crit]}"),
     cv.TABULAR: cv.View(cv.TABULAR, tabular_cal(tab), branch, opts,
                         "Fatimid (Bohra)" if tab == "fatimid" else "standard Kuwaiti cycle"),
+    cv.UNIFIED: cv.View(cv.UNIFIED, unified_cal(), branch, opts, "one date worldwide, Istanbul 2016"),
     cv.SOLAR: cv.View(cv.SOLAR, solar_cal(solar_rule), branch, opts, "Iran and Afghanistan"),
+    cv.AHMADI: cv.View(cv.AHMADI, ahmadi_cal(), branch, opts, "Ahmadiyya Muslim Community"),
+    cv.JULIAN: cv.View(cv.JULIAN, julian_cal(), branch, opts, "Eastern reckoning, Syriac month names"),
 }
 ctx = {
     "place": place, "branch": branch, "today": today, "views": views, "view": views[cal_key],
-    "method": method, "asr": asr, "high_lat": high_lat, "imsak": int(imsak), "crit": crit, "rule": rule,
+    "method": method, "asr": asr, "high_lat": high_lat, "imsak": int(imsak), "crit": crit, "ref": ref,
     "sighting_place": sp, "sighting_place_name": sp_name, "opts": opts,
 }
 

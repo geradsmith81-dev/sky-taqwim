@@ -14,51 +14,56 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 
 import arabic_names as an
+import extra_calendars as xc
+import hijri_core as hcore
 import holidays as hol
 import sighting_calendar as sc
 import solar_hijri_calendar as shc
 import tabular_calendar as tc
 import ummalqura_calendar as uq
 
-UMMALQURA, SIGHTING, TABULAR, SOLAR = "ummalqura", "sighting", "tabular", "solar"
-ALL = [UMMALQURA, SIGHTING, TABULAR, SOLAR]
-LUNAR = [UMMALQURA, SIGHTING, TABULAR]
+UMMALQURA, SIGHTING, UNIFIED, TABULAR = "ummalqura", "sighting", "unified", "tabular"
+SOLAR, AHMADI, JULIAN = "solar", "ahmadi", "julian"
+ALL = [UMMALQURA, SIGHTING, UNIFIED, TABULAR, SOLAR, AHMADI, JULIAN]
+LUNAR = [UMMALQURA, SIGHTING, UNIFIED, TABULAR]
 
-NAME = {UMMALQURA: "Umm al-Qura", SIGHTING: "Crescent sighting", TABULAR: "Tabular", SOLAR: "Solar Hijri"}
-NAME_AR = {UMMALQURA: "تقويم أم القرى", SIGHTING: "رؤية الهلال", TABULAR: "التقويم الحسابي",
-           SOLAR: "التقويم الهجري الشمسي"}
+NAME = {UMMALQURA: "Umm al-Qura", SIGHTING: "Crescent sighting", UNIFIED: "Unified Hijri", TABULAR: "Tabular",
+        SOLAR: "Solar Hijri", AHMADI: "Hijri Shamsi", JULIAN: "Julian (Rumi)"}
+NAME_AR = {UMMALQURA: "تقويم أم القرى", SIGHTING: "رؤية الهلال", UNIFIED: "التقويم الهجري الموحد",
+           TABULAR: "التقويم الحسابي", SOLAR: "التقويم الهجري الشمسي", AHMADI: "التقويم الهجري الشمسي الأحمدي",
+           JULIAN: "التقويم اليولياني (الرومي)"}
 HELP = {
     UMMALQURA: "The official calendar of Saudi Arabia, computed in advance for Mecca. The religious dates "
                "(Ramadan, the Eids, the Hajj) are declared there from sightings and can differ by a day.",
     SIGHTING: "Each month begins after the evening on which the young crescent is predicted visible from the "
               "chosen place; if it is not visible on the evening ending the 29th, the month has 30 days.",
+    UNIFIED: "One date for the whole world (Istanbul 2016): a month begins when somewhere on Earth, before "
+             "midnight UT, the Moon is 5 deg high and 8 deg from the Sun at sunset (or on the Americas mainland "
+             "if the new moon came before dawn in New Zealand). Used by Turkey's Diyanet and by Muhammadiyah.",
     TABULAR: "A fixed arithmetic calendar: months of 30 and 29 days in turn, and 11 leap years in every 30.",
-    SOLAR: "The official calendar of Iran (and of Afghanistan). The year begins at the March equinox "
-           "(Nowruz). It is a civil calendar; religious days follow the lunar months.",
+    SOLAR: "The official calendar of Iran (and of Afghanistan until 2022). The year begins at the March "
+           "equinox (Nowruz). It is a civil calendar; religious days follow the lunar months.",
+    AHMADI: "The Ahmadiyya Muslim Community's solar calendar (1940): Gregorian-length months named after events "
+            "in the Prophet's life, years counted from the Hijra (2026 = 1405 HS).",
+    JULIAN: "The Julian (Eastern, Ottoman 'Rumi') calendar with the Syriac month names of the Levant, 13 days "
+            "behind the Gregorian; some Alevi and Alawite feasts are fixed in it.",
 }
 
 # ---------------------------------------------------------------------------------------------- branches
 BRANCHES = ["sunni", "shia"]
 BRANCH_NAME = {"sunni": ("Sunni", "أهل السنة"), "shia": ("Shia", "الشيعة")}
 
-# sighting rules offered per tradition: key -> (label, criterion, reference: "mecca" | "local")
-SIGHTING_RULES = {
-    "sunni": {
-        "mecca_eye": ("Seen from Mecca with the naked eye (as the Saudi Supreme Court seeks)", "yallop_B", "mecca"),
-        "mecca_aid": ("Seen from Mecca, binoculars or telescope accepted", "odeh_C", "mecca"),
-        "local_eye": ("Seen from your own place with the naked eye (local sighting)", "yallop_B", "local"),
-        "local_aid": ("Seen from your own place, optical aid accepted", "odeh_C", "local"),
-    },
-    "shia": {
-        "local_eye": ("Naked eye on your local horizon (e.g. Ayatollah Sistani, Makarem Shirazi)", "yallop_B", "local"),
-        "local_aid": ("Optical aid accepted on your local horizon (e.g. Ayatollah Khamenei, Bahjat)", "odeh_C", "local"),
-        "najaf_eye": ("Naked eye from Najaf", "yallop_B", "Najaf"),
-        "qom_aid": ("Optical aid accepted, from Qom", "odeh_C", "Qom"),
-    },
-}
+# where the crescent is looked for: "Mecca", "local" (your own place) or a sighting_calendar preset place
 DEFAULTS = {
-    "sunni": {"calendar": UMMALQURA, "sighting_rule": "mecca_eye", "tabular": "kuwaiti", "method": "mwl"},
-    "shia": {"calendar": SIGHTING, "sighting_rule": "local_eye", "tabular": "kuwaiti", "method": "jafari"},
+    "sunni": {"calendar": UMMALQURA, "ref": "Mecca", "crit": "yallop_B", "tabular": "kuwaiti", "method": "mwl"},
+    "shia": {"calendar": SIGHTING, "ref": "local", "crit": "yallop_B", "tabular": "kuwaiti", "method": "jafari"},
+}
+CRIT_NOTES = {
+    "yallop_B": "naked eye (e.g. Ayatollah Sistani; the Saudi Supreme Court seeks naked-eye or binocular sightings)",
+    "odeh_C": "optical aid accepted (e.g. Ayatollah Khamenei)",
+    "mabims": "Brunei, Indonesia, Malaysia, Singapore since 2021",
+    "wujud": "Muhammadiyah until 2024; the Umm al-Qura rule applied at your place",
+    "conjunction": "some groups that count from the astronomical new moon",
 }
 
 
@@ -84,15 +89,28 @@ class View:
 
     @property
     def short(self) -> str:
-        return {UMMALQURA: "Umm al-Qura", SIGHTING: "Sighting", TABULAR: "Tabular", SOLAR: "Solar"}[self.key]
+        return {UMMALQURA: "Umm al-Qura", SIGHTING: "Sighting", UNIFIED: "Unified", TABULAR: "Tabular",
+                SOLAR: "Solar", AHMADI: "HS", JULIAN: "Julian"}[self.key]
+
+    @property
+    def lunar(self) -> bool:
+        return self.key in LUNAR
 
     @property
     def solar(self) -> bool:
-        return self.key == SOLAR
+        """True for the civil-day (solar) calendars: solar Hijri, Hijri Shamsi, Julian."""
+        return not self.lunar
 
     @property
     def era(self) -> str:
-        return "SH" if self.solar else "AH"
+        return hcore.ERA.get(getattr(self.cal, "calendar", "lunar"), "AH")
+
+    @property
+    def lang(self) -> str:
+        return {SOLAR: "fa", AHMADI: "ur"}.get(self.key, "ar")
+
+    def digits(self, n) -> str:
+        return an.to_persian_digits(n) if self.key in (SOLAR, AHMADI) else an.to_arabic_digits(n)
 
     @property
     def first_day(self) -> date:
@@ -125,28 +143,34 @@ class View:
         return h.year if h else None
 
     def month_name(self, m: int) -> tuple[str, str]:
-        if self.solar:
+        if self.key == SOLAR:
             return an.SOLAR_MONTHS[m][0], an.SOLAR_MONTHS[m][1]
-        return an.MONTHS[m][0], an.MONTHS[m][1]
+        if self.lunar:
+            return an.MONTHS[m][0], an.MONTHS[m][1]
+        c = getattr(self.cal, "calendar", "lunar")
+        return hcore.month_name(m, c), hcore.month_ar(m, c)
 
     def holidays_for_year(self, y: int) -> list:
-        if self.solar:
+        if self.key == SOLAR:
             return hol.solar_holidays_for_year(self.cal, y)
+        if self.key == AHMADI:
+            return xc.ahmadi_days(self.cal, y)
+        if self.key == JULIAN:
+            return xc.julian_days(self.cal, y)
         return hol.holidays_for_year(self.cal, y, self.branch, **self.opts)
 
     def holidays_between(self, start: date, end: date) -> list:
         if self.solar:
             out = []
             for y in {self.year_of(start), self.year_of(end)} - {None}:
-                out += [h for h in hol.solar_holidays_for_year(self.cal, y) if start <= h.date <= end]
+                out += [h for h in self.holidays_for_year(y) if start <= h.date <= end]
             return sorted(out, key=lambda h: h.date)
         return hol.holidays_between(self.cal, start, end, self.branch, **self.opts)
 
 
-def sighting_place(rule_key: str, branch: str, place: dict) -> tuple[dict | None, str]:
-    """The reference place of a sighting rule: None = Mecca (precomputed), else a place dict."""
-    label, crit, ref = SIGHTING_RULES[branch][rule_key]
-    if ref == "mecca":
+def sighting_place(ref: str, place: dict) -> tuple[dict | None, str]:
+    """The reference place of the sighting calendar: None = Mecca (precomputed), else a place dict."""
+    if ref == "Mecca":
         return None, "Mecca"
     if ref == "local":
         return {"name": place.get("name", ""), "lat": float(place["lat"]), "lon": float(place["lon"]),

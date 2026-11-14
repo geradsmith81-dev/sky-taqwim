@@ -1,6 +1,6 @@
 ## How Sky Taqwim works · كيف يعمل تقويم السماء
 
-Sky Taqwim shows the Islamic calendar four ways, for **Sunni** or **Shia** (Twelver) practice. The positions of
+Sky Taqwim shows the Islamic calendar seven ways, for **Sunni** or **Shia** practice, and lists which calendar each school, branch and movement uses (the **Traditions** page). The positions of
 the Sun and the Moon come from NASA's Jet Propulsion Laboratory ephemeris **DE440s** (1850–2149), read with the
 Skyfield library. Nothing is looked up online except the one-time download of that file.
 
@@ -17,7 +17,7 @@ are the papyrus PERF 558 (22 AH) and the Zuhayr inscription near al-'Ula (24 AH)
 daytime falls on that date. It began at sunset the evening before. In Ja'fari (Shia) practice the evening
 begins at Maghrib, once the redness has left the eastern sky, a little after sunset.
 
-### 2. The four calendars · التقاويم الأربعة
+### 2. The calendars · التقاويم
 
 **Umm al-Qura · تقويم أم القرى** is the official calendar of Saudi Arabia, worked out in advance for Mecca. Since
 1423 AH (2002) its rule is: on the 29th day of a month, if the new moon (the conjunction) comes before sunset at
@@ -58,12 +58,69 @@ Dawoodi Bohra, an Isma'ili Shia community; it is not the calendar of Twelver Shi
 10, 13, 16, 19, 21, 24, 27 and 29 and the epoch of 15 July 622, and runs one or two days ahead of the
 standard form.
 
+**Unified Hijri Calendar · التقويم الهجري الموحد** is the calendar adopted at the Istanbul congress of
+2016. The whole world is one sighting zone, and a month begins on the same day everywhere. Day D is the 1st when,
+on the evening before, somewhere on Earth whose sunset comes before 00:00 UT the Moon is at least 5° above the
+horizon and 8° from the Sun at sunset. It is also the 1st if that holds on the mainland of the Americas after
+00:00 UT and the new moon came before dawn in Wellington. Turkey's Diyanet, Indonesia's Muhammadiyah (from
+1446 AH) and, for Ramadan and Shawwal, the European Council for Fatwa and Research and the Fiqh Council of
+North America use these 5° + 8° parameters. The app searches every latitude from 60° S to 60° N and the west
+coast of the Americas. It uses topocentric altitude and geocentric elongation, the reading that reproduces
+Diyanet's published calendar in 184 of 186 months (2021–2035).
+
 **Solar Hijri · التقويم الهجري الشمسي** is the official civil calendar of Iran (since 1925) and of Afghanistan.
 It counts solar years from the Hijra. The year begins with Nowruz, on the day of the March equinox if the
 equinox comes before noon on the 52.5° E meridian, otherwise on the next day. The first six months have 31
 days, the next five 30, and Esfand 29, or 30 in a leap year. The app finds every equinox from JPL. Over 300
 years it agrees with two independent calendar libraries in every year but 1503 SH (2124), whose equinox falls
 6 seconds before noon. Religious days in Iran and Afghanistan still follow the lunar months.
+
+**Hijri Shamsi · الهجري الشمسي الأحمدي** is the solar calendar of the Ahmadiyya Muslim Community (1940). Its
+months have the days of the Gregorian months and are named after events in the Prophet's life: Sulh, Tabligh,
+Aman, Shahadat, Hijrat, Ihsan, Wafa, Zuhur, Tabuk, Ikha, Nabuwwat and Fatah. Its years are counted from the
+Hijra in solar years (2026 = 1405 HS). Ahmadi Ramadan and Eids still follow the lunar months.
+
+**Julian (Rumi) · اليولياني** is the Eastern reckoning, with the Syriac month names of the Levant and Iraq. It
+was the Ottoman 'Rumi' calendar until 1917, and it now runs 13 days behind the Gregorian calendar. Some Alevi
+and Alawite days are fixed in it: Hıdırellez on 23 April Julian is 6 May. The Alawite Nawruz
+(4 Nisan) is 17 April, and Mihrajan (16 Tishrin al-Awwal) is 29 October (Friedman 2010).
+
+**Sighting rules.** The crescent can be looked for from Mecca, from your own place, or from one of 21 cities.
+The rules are:
+- **Yallop** and **Odeh**: predictions of whether the crescent can be seen.
+- **Neo-MABIMS** (Brunei, Indonesia, Malaysia and Singapore since 2021): the Moon at least 3° high and 6.4° from
+  the Sun at sunset.
+- **Wujud al-hilal**: the new moon before sunset and the Moon setting after the Sun. This is Umm al-Qura's rule
+  applied at your place, and Muhammadiyah's rule until 2024.
+- **Conjunction**: the new moon before sunset on the 29th.
+
+The last three are calculated criteria. They do not ask whether the crescent can be seen.
+
+### 2b. Traditions · المذاهب والفرق
+
+The **Traditions** page lists the schools, branches and movements of Islam under the calendar each uses:
+
+- **The four Sunni schools.** The Hanafi, Maliki and Hanbali schools hold that one sighting binds all who hear
+  of it, while the Shafi'i school holds that each region follows its own horizon.
+- **Sunni movements.** The Deobandi, Barelvi and Wahhabi/Salafi movements are listed with the practice of the
+  states where they are strongest. The Taliban are a political movement rather than a school; Afghanistan's
+  official calendar became the lunar Hijri in 2022.
+- **Shia communities.**
+  - **Twelvers** follow the local horizon. Sistani requires the naked eye; Khamenei accepts a telescope.
+  - **Alawites** keep lunar feasts and some solar feasts by the Julian reckoning.
+  - **Isma'ilis:** the Dawoodi Bohras keep the Fatimid tabular calendar; the Nizaris keep the sighting.
+  - **Alevi-Bektashis** keep Turkey's calculated calendar for the Muharram fast, and the Julian calendar for
+    Hıdırellez.
+  - **Zaydis** keep the sighting in Yemen.
+- **Other branches and movements.**
+  - **Ibadis** keep local sighting in Oman.
+  - **Ahmadis** keep naked-eye visibility worked out by calculation, and their Hijri Shamsi calendar.
+  - **Quranists** have no common authority; most keep the sighting, and some count from the new moon.
+- **Without a calendar of their own.** The Kharijites survive only in the Ibadis, who reject the name; Sufism is
+  a path within both branches; Salafist jihadism is a militant movement.
+
+Press **Use** beside any entry and the app's settings change to model that practice. Each entry gives its
+sources. Practice varies inside every group, so the presets are models of the main practice named.
 
 ### 3. Sunni and Shia · السنة والشيعة
 

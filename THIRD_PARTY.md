@@ -8,3 +8,4 @@
   - The reading of the Istanbul 2016 rule follows `docs/research/2026-10-25-diyanet-global-rule.md`.
   - The code in Sky Taqwim is its own and is not derived from libmuslim's code.
 - **Official Umm al-Qura table** (1343–1500 AH) via the hijridate package (MIT licence). The table itself is published by KACST.
+- **World Magnetic Model 2025** (NOAA NCEI and the British Geological Survey; a US government work, public domain), used through the **pygeomag** package (MIT licence, https://github.com/boxpet/pygeomag) for the magnetic declination of the live qibla compass.

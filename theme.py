@@ -184,6 +184,12 @@ h1, h2, h3, h4 {{ font-family: {SERIF}; color: {GOLD}; }}
 .tq-qibla svg {{ flex: 0 0 auto; max-width: 100%; height: auto; }}
 .tq-qibla-deg {{ font-family: {SERIF}; font-size: 1.7rem; font-weight: 700; color: {GOLD}; line-height: 1.1; }}
 .tq-qibla-text {{ color: {MUTED}; font-size: .9rem; }}
+.tq-scroll {{ overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 70vh; overflow-y: auto;
+              border: 1px solid {GOLD_DEEP}; border-radius: 6px; background: {CARD}; }}
+.tq-times {{ width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; white-space: nowrap; }}
+.tq-times th {{ position: sticky; top: 0; background: {SIDEBAR}; color: {GOLD}; z-index: 1; }}
+.tq-times th, .tq-times td {{ padding: .3rem .55rem; text-align: left; border-bottom: 1px solid rgba(235,194,95,.18); color: {TEXT}; }}
+.tq-times tr.tq-today-row td {{ background: #24356c; color: #ffffff; font-weight: 700; }}
 .tq-moon {{ display: inline-block; vertical-align: middle; line-height: 0; }}
 a {{ color: {LINK}; }}
 @media (pointer: coarse) {{
@@ -220,12 +226,102 @@ LOCATOR_CSS = f"""
 @media (pointer: coarse) {{ .tq-loc-btn, .sl-loc-btn {{ min-height:44px; }} }}
 """
 
+
+# The live qibla compass (qibla_live.py: its component CSS).
+QIBLA_LIVE_CSS = f"""
+.tq-ql-wrap {{ position: relative; padding-top: 14px; flex: 0 0 auto; }}
+.tq-ql-lubber {{ position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0;
+                border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 13px solid {CARNELIAN}; }}
+.tq-ql-stage {{ position: relative; border-radius: 50%; transition: box-shadow .25s; }}
+.tq-ql-stage.tq-ql-on {{ box-shadow: 0 0 0 4px {OBS}, 0 0 18px 4px rgba(191,227,166,.55); }}
+.tq-ql-dial, .tq-ql-arrow {{ position: absolute; inset: 0; will-change: transform; transform-origin: 50% 50%; }}
+.tq-ql-dial svg, .tq-ql-arrow svg {{ width: 100% !important; height: 100% !important; max-width: none !important; display: block; }}
+.tq-ql-info {{ flex: 1 1 13rem; min-width: 12rem; }}
+.tq-ql-btn {{ display: none; margin-top: .55rem; background: {LAPIS}; color: #ffffff; border: 1px solid {GOLD};
+             border-radius: 6px; padding: .45rem .9rem; font: 700 .95rem {SERIF}; min-height: 44px; cursor: pointer; }}
+.tq-ql-btn:focus-visible {{ outline: 2px solid {GOLD}; outline-offset: 2px; }}
+.tq-ql-status {{ margin-top: .45rem; color: {TEXT}; font-size: .95rem; font-weight: 600; min-height: 1.3em; }}
+.tq-ql-status.tq-ql-good {{ color: {OBS}; }}
+.tq-ql-status.tq-ql-warn {{ color: {GOLD}; }}
+.tq-ql-tab {{ display: none; margin-top: .4rem; color: {LINK}; font-size: .92rem; }}
+"""
+
+# Streamlit's own widgets, text and menus. These rules set the colours directly, so the app reads the same
+# (ivory and gold on night lapis) whether the browser, the phone or Streamlit's menu is in light or dark mode,
+# and even if .streamlit/config.toml is missing. Every pair here is at least 7:1 (WCAG AAA).
+FORCE_CSS = f"""
+<style>
+:root {{ color-scheme: dark; }}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottom"] > div {{ color: {TEXT}; }}
+.stApp {{ background-color: {BG}; }}
+[data-testid="stHeader"] {{ background: rgba(11,20,48,.92); color: {TEXT}; }}
+[data-testid="stHeader"] button, [data-testid="stHeader"] a, [data-testid="stToolbar"] *,
+[data-testid="stSidebarCollapseButton"] *, [data-testid="stExpandSidebarButton"] *, [data-testid="stSidebarCollapsedControl"] * {{
+  color: {TEXT} !important; fill: currentColor; }}
+[data-testid="stSidebar"], [data-testid="stSidebar"] > div {{ background-color: {SIDEBAR} !important; color: {TEXT}; }}
+[data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li,
+[data-testid="stText"], [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] p, label, legend,
+[data-testid="stRadio"] label, [data-testid="stRadio"] p, [data-testid="stCheckbox"] p, [data-testid="stToggle"] p,
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"] p {{ color: {TEXT} !important; }}
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p, .stCaption, small,
+[data-testid="stWidgetLabel"] [data-testid="stTooltipIcon"] {{ color: {MUTED} !important; }}
+[data-testid="stMarkdownContainer"] a, [data-testid="stCaptionContainer"] a {{ color: {LINK} !important; }}
+[data-testid="stMarkdownContainer"] code {{ background: {CARD}; color: {GOLD}; }}
+h1, h2, h3, h4, h5, h6, [data-testid="stHeading"] * {{ color: {GOLD} !important; }}
+/* text boxes, number boxes, select boxes and their menus */
+[data-baseweb="input"], [data-baseweb="base-input"], [data-baseweb="textarea"], [data-baseweb="select"] > div,
+[data-testid="stNumberInputContainer"], [data-testid="stDateInput"] [data-baseweb="input"] {{
+  background-color: {CARD} !important; border-color: rgba(235,194,95,.55) !important; color: {TEXT} !important; }}
+[data-baseweb="input"] input, [data-baseweb="base-input"] input, textarea, [data-baseweb="select"] input,
+[data-baseweb="select"] div, [data-baseweb="select"] span {{ color: {TEXT} !important; -webkit-text-fill-color: {TEXT}; background-color: transparent; }}
+input::placeholder, textarea::placeholder {{ color: {MUTED} !important; -webkit-text-fill-color: {MUTED}; opacity: 1; }}
+[data-baseweb="select"] svg, [data-testid="stNumberInputContainer"] svg {{ color: {TEXT} !important; fill: currentColor; }}
+[data-testid="stNumberInputStepDown"], [data-testid="stNumberInputStepUp"] {{ background: {CARD} !important; color: {TEXT} !important; }}
+[data-baseweb="popover"] > div, [data-baseweb="popover"] ul, [data-baseweb="menu"], [role="listbox"] {{
+  background-color: {CARD} !important; color: {TEXT} !important; border-color: {GOLD_DEEP} !important; }}
+[data-baseweb="popover"] li, [role="option"] {{ color: {TEXT} !important; background-color: {CARD}; }}
+[data-baseweb="popover"] li:hover, [role="option"]:hover, [role="option"][aria-selected="true"] {{ background-color: #24356c !important; }}
+[data-baseweb="tag"] {{ background-color: {LAPIS} !important; color: #ffffff !important; }}
+[data-baseweb="tag"] * {{ color: #ffffff !important; }}
+[data-baseweb="calendar"], [data-baseweb="calendar"] * {{ background-color: {CARD}; color: {TEXT}; }}
+[data-baseweb="tooltip"], [data-baseweb="tooltip"] * {{ background-color: {CARD} !important; color: {TEXT} !important; }}
+/* buttons */
+[data-testid^="stBaseButton-secondary"], [data-testid="stDownloadButton"] button, .stButton > button {{
+  background-color: {CARD} !important; color: {TEXT} !important; border: 1px solid {GOLD} !important; }}
+[data-testid^="stBaseButton-secondary"]:hover, [data-testid="stDownloadButton"] button:hover, .stButton > button:hover {{
+  background-color: #24356c !important; color: #ffffff !important; }}
+[data-testid^="stBaseButton-primary"] {{ background-color: {LAPIS} !important; color: #ffffff !important; border: 1px solid {GOLD} !important; }}
+[data-testid^="stBaseButton"] p {{ color: inherit !important; }}
+/* radio dots, check boxes and toggles stay visible on the dark ground */
+[data-testid="stRadio"] [role="radio"] > div:first-child, [data-baseweb="radio"] > div:first-child {{ border-color: {GOLD} !important; }}
+[data-baseweb="checkbox"] [role="checkbox"], [data-baseweb="checkbox"] > div:first-child {{ border-color: {GOLD} !important; }}
+/* expanders, tabs, alerts, tables */
+[data-testid="stExpander"] details, [data-testid="stExpander"] > details {{ background-color: {CARD} !important;
+  border-color: rgba(235,194,95,.45) !important; color: {TEXT} !important; }}
+[data-testid="stExpander"] summary, [data-testid="stExpander"] summary * {{ color: {GOLD} !important; background-color: transparent; }}
+[data-testid="stExpander"] summary:hover {{ background-color: #1a2a5a !important; }}
+[data-baseweb="tab"], [data-baseweb="tab"] p {{ color: {TEXT} !important; }}
+[data-baseweb="tab"][aria-selected="true"], [data-baseweb="tab"][aria-selected="true"] p {{ color: {GOLD} !important; }}
+[data-testid="stAlertContainer"], [data-testid="stAlert"] > div {{ background-color: {CARD} !important; color: {TEXT} !important;
+  border: 1px solid {GOLD_DEEP}; }}
+[data-testid="stAlertContainer"] *, [data-testid="stAlert"] * {{ color: {TEXT} !important; }}
+[data-testid="stTable"] table, [data-testid="stTable"] th, [data-testid="stTable"] td {{ color: {TEXT} !important;
+  background-color: {CARD} !important; border-color: rgba(235,194,95,.3) !important; }}
+[data-testid="stTable"] th {{ color: {GOLD} !important; }}
+[data-testid="stSpinner"], [data-testid="stSpinner"] * {{ color: {TEXT} !important; }}
+[data-testid="stToast"] {{ background-color: {CARD} !important; color: {TEXT} !important; }}
+hr {{ border-color: rgba(235,194,95,.35) !important; }}
+</style>
+"""
+
+
 SUBTITLE = "the Islamic calendar, Sunni and Shia, from NASA JPL astronomy"
 TITLE_AR = "تقويم السماء"
 
 
 def apply():
     st.html(CSS)
+    st.html(FORCE_CSS)
 
 
 def branch_badge(branch: str) -> str:

@@ -276,7 +276,7 @@ def samarra_band_svg(h=34) -> str:
 
 
 # --------------------------------------------------------------------------------------------- qibla compass
-def qibla_compass_svg(bearing_deg: float, size: int = 160, caption: str = "") -> str:
+def qibla_compass_svg(bearing_deg: float, size: int = 160, caption: str = "", needle: bool = True) -> str:
     """A compass card with N, E, S and W, an eight-pointed rose, and a gold needle toward the qibla.
     bearing_deg: initial great-circle bearing to the Kaaba, degrees clockwise from true north."""
     c, R = 80, 74
@@ -301,6 +301,8 @@ def qibla_compass_svg(bearing_deg: float, size: int = 160, caption: str = "") ->
                    f"font-size='14' font-weight='700' fill='{col}'>{lab}</text>")
     # needle toward the qibla, with a small khatam at the tip; a short muted tail
     b = float(bearing_deg) % 360.0
+    if not needle:   # the dial alone (the live compass draws its own arrow on top)
+        return _svg(size, size, "".join(out), 160, 160, extra=" role='presentation'")
     out.append(f"<g transform='rotate({b:.2f} {c} {c})'>"
                f"<polygon points='{c},{c + 16} {c - 3.2},{c} {c + 3.2},{c}' fill='{GOLD_DEEP}'/>"
                f"<polygon points='{c},{c - 50} {c - 5.2},{c} {c},{c + 4} {c + 5.2},{c}' fill='{GOLD}' stroke='{NIGHT}' stroke-width='0.8'/>"
@@ -313,6 +315,19 @@ def qibla_compass_svg(bearing_deg: float, size: int = 160, caption: str = "") ->
                    f"font-size='13' fill='{IVORY}'>{caption}</text>")
     return _svg(size, size * hh / 160, "".join(out), 160, hh,
                 extra=f" role='img' aria-label='Qibla direction {b:.0f} degrees from north'")
+
+
+def qibla_arrow_svg(size: int = 160) -> str:
+    """A bold gold arrow pointing up (toward the top of the drawing), with a small Kaaba at its tip.
+    Drawn in the same 160 x 160 frame as the compass dial, so it can sit on top of it and be turned."""
+    c = 80
+    kaaba = (f"<rect x='{c - 7}' y='9' width='14' height='13' rx='1.2' fill='{NIGHT}' stroke='{GOLD}' stroke-width='1.4'/>"
+             f"<rect x='{c - 7}' y='12.2' width='14' height='2.4' fill='{GOLD}'/>")
+    arrow = (f"<polygon points='{c},25 {c - 13},50 {c - 5},48 {c - 5},{c + 30} {c + 5},{c + 30} {c + 5},48 {c + 13},50' "
+             f"fill='{GOLD}' stroke='{NIGHT}' stroke-width='1.4' stroke-linejoin='round'/>"
+             f"<polygon points='{c},25 {c},{c + 30} {c + 5},{c + 30} {c + 5},48 {c + 13},50' fill='{GOLD_DEEP}' opacity='0.55'/>")
+    hub = f"<circle cx='{c}' cy='{c}' r='6' fill='{NIGHT}' stroke='{GOLD}' stroke-width='2'/>"
+    return _svg(size, size, kaaba + arrow + hub, 160, 160, extra=" role='presentation'")
 
 
 # --------------------------------------------------------------------------------------------- the Moon

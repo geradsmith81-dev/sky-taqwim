@@ -160,6 +160,17 @@ enough for Fajr and Isha, so the settings offer the usual adjustments.
 The **qibla** is the initial direction of the great circle to the Kaaba (21.4225° N, 39.8262° E), measured
 from true north. A magnetic compass needs correcting for the local magnetic declination.
 
+On a phone or tablet the Today page's qibla card is a **live compass**. The device's compass reports the heading
+of its top edge from *magnetic* north (iPhone and iPad after **Turn on the live compass** is tapped and Motion &
+Orientation is allowed; Android without asking). The app adds the magnetic declination of your place, from the
+World Magnetic Model 2025 (NOAA and the British Geological Survey), to get the heading from *true* north. It then
+turns the dial so that N points to true north, and the gold arrow so that it points along the qibla bearing. The
+red mark above the dial is the top of the phone: when the arrow points at it (within 5°) the card says you are
+facing the qibla, and the phone gives a short vibration where it can. The phone must be held flat, screen up: held
+upright, its compass is unreliable and the card says so. Steel, magnets and cars disturb any compass; if the
+reading drifts, move the phone in a figure of eight to recalibrate it. Computers have no compass, so the dial stays
+with north at the top. The compass readings are used only in the browser and are not sent anywhere.
+
 ### 5. Limits · حدود
 
 - The sighting calendar **predicts** what can be seen in clear weather. Real announcements depend on weather,

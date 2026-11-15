@@ -19,6 +19,7 @@ import holiday_history as hh  # noqa: E402
 import holidays as hol  # noqa: E402
 import prayer_times as pt  # noqa: E402
 import qibla as qb  # noqa: E402
+import qibla_live  # noqa: E402
 import sects  # noqa: E402
 import sighting_calendar as sc  # noqa: E402
 import sky_engine as se  # noqa: E402
@@ -250,8 +251,8 @@ def render_today(ctx):
         if dist < 0.5:
             st.html(card(ttl("Qibla", "القبلة"), "<div>You are at the Kaaba.</div>"))
         else:
-            st.html(card(ttl("Qibla", "القبلة"), theme.qibla_box(b, place.get("name", ""), dist,
-                                                               size=130 if device.phone() else 150)))
+            qibla_live.show(b, place.get("name", ""), dist, float(place["lat"]), float(place["lon"]),
+                            ttl("Qibla", "القبلة"), size=200 if device.phone() else 170)
     if have_sky:
         _moon_card(ctx, now, tz)
     hs = [h for h in view.holidays_between(today, today + timedelta(days=75)) if h.kind != "month"][:14]
@@ -593,7 +594,14 @@ def render_prayer(ctx):
                  + f" · Midnight: {'sunset to Fajr' if m.get('midnight') == 'jafari' else 'sunset to sunrise'}"
                  + f"</div><div class='tq-muted' style='font-size:.8rem'>Source: {esc(m.get('source', ''))}</div>"))
     st.html(f"<div class='tq-big'>{start:%B %Y} · {bi(place['label'], place.get('ar', ''))}</div>")
-    st.dataframe(df, hide_index=True, width="stretch", height=min(38 * (len(df) + 1), 1200))
+    # An HTML table rather than st.dataframe: the data grid is drawn on a canvas in Streamlit's own colours,
+    # which page CSS cannot reach, so in light mode it would not match (or would lose contrast).
+    today_s = datetime.now(ZoneInfo(place["tz"])).date().strftime("%a %d %b") if place.get("tz") else ""
+    head = "".join(f"<th>{esc(c)}</th>" for c in df.columns)
+    body = "".join("<tr" + (" class='tq-today-row'" if r["date"] == today_s else "") + ">"
+                   + "".join(f"<td>{esc(str(v))}</td>" for v in r.values()) + "</tr>" for r in rows)
+    st.html(f"<div class='tq-scroll'><table class='tq-table tq-times'><thead><tr>{head}</tr></thead>"
+            f"<tbody>{body}</tbody></table></div>")
     st.download_button("Download this timetable (.csv)", df.to_csv(index=False).encode("utf-8-sig"),
                        file_name=f"sky_taqwim_prayer_{place.get('name', 'place')}_{start:%Y_%m}.csv", mime="text/csv")
     notes = [

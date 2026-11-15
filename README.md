@@ -15,7 +15,7 @@ The Islamic calendar for **Sunni or Shia** practice, from NASA JPL astronomy (DE
 - **Prayer times:**
   - Sunni methods: MWL, ISNA, Egypt, Umm al-Qura, Karachi, Diyanet, the Gulf states, JAKIM and others, with Shafi'i or Hanafi Asr.
   - Shia methods: Leva Institute of Qum, and Tehran, with Ja'fari Maghrib and midnight.
-  - Plus imsak, the qibla compass, and the Moon.
+  - Plus imsak, the Moon, and a live qibla compass: on a phone held flat the arrow turns with the phone and points to the Kaaba (corrected for magnetic declination).
 - **Pages:** Today, Traditions, Month, Year & holy days (with .ics and .csv downloads), Prayer times, Crescent, Compare, How it works.
 - **Sources:** each holy day opens a short sourced history (48 entries), and both traditions are presented in their own terms.
 - **Location:** found automatically (the browser asks once). Proper nouns are also shown in Arabic script (Persian for the solar months). The design follows early Islamic (Umayyad and Abbasid) art.
@@ -26,7 +26,7 @@ See `HOW_IT_WORKS.md` for the rules and sources, and `docs/VALIDATION.md` for th
 
 1. On github.com, create a new **public** repository named `sky-taqwim`.
 2. Choose **Add file → Upload files** and drag in *everything in this folder*. Upload the `assets`, `data`, `docs`, `ephem`, `tests` and `tools` folders as folders.
-3. Browsers often skip the hidden `.streamlit` folder. If it is missing after the upload, choose **Add file → Create new file**, type the name `.streamlit/config.toml`, and paste the *contents* of `config.toml for GitHub (paste).txt` (not its file name).
+3. Browsers often skip the hidden `.streamlit` folder. If it is missing after the upload, choose **Add file → Create new file**, type the name `.streamlit/config.toml`, and paste the *contents* of `config.toml for GitHub (paste).txt` (not its file name). The app reads correctly without it too (its colours are set in `theme.py`), but the file keeps Streamlit's own accents in the same colours.
 4. At https://share.streamlit.io choose **Create app**, select the repository, branch `main` and file `app.py`. Under **Advanced settings** pick **Python 3.12**, then **Deploy**.
 5. The first start downloads the NASA JPL file (32.7 MB), which takes about a minute.
 

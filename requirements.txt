@@ -7,3 +7,4 @@ pillow>=10
 geonamescache>=2.0
 hijridate==2.3.0
 tzdata
+pygeomag>=1.1

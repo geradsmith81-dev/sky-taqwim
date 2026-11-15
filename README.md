@@ -40,3 +40,7 @@ streamlit run app.py
 Dates run from 1850 to 2149. Put de440.bsp in `ephem/` for the prayer times and the Moon to reach 1550–2650. The Mecca crescent table then needs rebuilding with `python tools/build_tables.py`.
 
 The Americas coastline table and the transcription of Diyanet's calendar come from the libmuslim project (Apache-2.0); see `THIRD_PARTY.md`. The Arabic fonts are subsets of Noto Kufi Arabic and Noto Naskh Arabic, © The Noto Project Authors, under the SIL Open Font License (`assets/fonts/`).
+
+## License
+
+MIT License, copyright (c) 2026 Gerad Smith. See [LICENSE](LICENSE). Third-party data and fonts keep their own licences: see [THIRD_PARTY.md](THIRD_PARTY.md).

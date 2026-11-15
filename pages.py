@@ -145,12 +145,6 @@ def verdict(row) -> str:
     return f"Yallop {row['yallop']}: {se.YALLOP_TEXT[row['yallop']]}; Odeh {row['odeh']}: {se.ODEH_TEXT[row['odeh']]}"
 
 
-def other_views(ctx, view) -> list:
-    """The other calendars shown in each day of the month grid (lunar ones; the solar one for the solar view)."""
-    keys = [k for k in cv.LUNAR if k != view.key]
-    return [ctx["views"][k] for k in keys]
-
-
 def year_label(view, y: int) -> str:
     ms = view.year_months(y)
     if not ms:
@@ -195,10 +189,8 @@ def render_today(ctx):
             body += ("<div class='tq-obs'>The sun has set: the next Islamic day has begun "
                      "(the solar calendars change day at midnight).</div>")
         st.html(card(ttl("Today", "اليوم"), body))
-        for k in cv.ALL:
-            v = ctx["views"][k]
-            mark = " <span class='tq-muted'>(shown in the calendar)</span>" if k == view.key else ""
-            title = ttl(v.name, v.name_ar) + mark
+        for v in (view,):   # only the calendar chosen in the settings (the Compare page sets them side by side)
+            title = ttl(v.name, v.name_ar)
             h = v.hdate(today)
             if h is None:
                 st.html(card(title, "<span class='tq-muted'>Outside the range of this calendar.</span>"))
@@ -344,17 +336,10 @@ def render_month(ctx):
     hols = {}
     for h in view.holidays_between(m.start, m.end):
         hols.setdefault(h.date, []).append(h)
-    others = other_views(ctx, view)
     is_ram = (not view.solar) and m.month == RAMADAN
 
     def cell_lines(d):
         out = []
-        hv = view.hdate(d)
-        for o in others:
-            oh = o.hdate(d)
-            if oh is not None and hv is not None:
-                differ = (not view.solar) and (oh.day, oh.month) != (hv.day, hv.month)
-                out.append(f"<span class='tq-other'>{'≠ ' if differ else ''}{o.short}: {oh.day} {esc(oh.month_name)}</span>")
         for h in hols.get(d, []):
             out.append(chip_for(h, align_right=((d.weekday() - WEEK_START) % 7 >= 4 and not device.phone())))
         zz = z.get(d)
@@ -413,6 +398,7 @@ def render_month(ctx):
             f"{'Hijri' if view.lunar else view.name} day. Click a holy day's name for a short history. "
             + ("Each Islamic day begins at the sunset before." if not view.solar else "") + "</div>")
     _month_began(ctx, view, m)
+    st.caption("Only the calendar chosen in the settings is shown. The Compare page sets the calendars side by side.")
 
 
 def _month_began(ctx, view, m):
@@ -428,11 +414,6 @@ def _month_began(ctx, view, m):
             body += ("<div class='tq-muted'>From the table published by the King Abdulaziz City for Science and "
                      "Technology (KACST). The rule since 1423 AH: if on the 29th the new moon comes before sunset at "
                      "Mecca and the Moon sets after the Sun, the next day begins the month.</div>")
-        s = ctx["views"][cv.SIGHTING].get_month(m.year, m.month)
-        if s is not None:
-            dd = (s.start - m.start).days
-            body += (f"<div class='tq-obs'>Crescent sighting ({esc(ctx['views'][cv.SIGHTING].detail)}) begins this month on "
-                     f"{s.start:%a %d %b %Y}, {rel(dd, 'Umm al-Qura')}.</div>")
         st.html(card(ttl("How this month began", "بداية الشهر"), body))
     elif view.key == cv.SIGHTING:
         body = f"<div>{esc(m.note)}.</div>"
@@ -462,11 +443,6 @@ def _month_began(ctx, view, m):
                      "the Sun (min)</th><th>Moon age (h)</th><th>Moon height at sunset</th><th>Elongation at sunset</th>"
                      "<th>Verdict</th></tr>"
                      + "".join(rows) + "</table>")
-        u = (m.extra or {}).get("ummalqura_start")
-        if u:
-            dd = (m.start - u).days
-            body += (f"<div class='tq-muted'>Umm al-Qura begins this month on {u:%a %d %b %Y}; the sighting start is "
-                     f"{rel(dd, 'Umm al-Qura')}.</div>")
         body += f"<div class='tq-muted'>Rule in use: {esc(sc.CRITERIA[ctx['crit']])}, seen {esc(view.detail.split(',')[0])}.</div>"
         st.html(card(ttl("How this month began", "رؤية الهلال"), body))
     elif view.key == cv.TABULAR:
@@ -483,9 +459,6 @@ def _month_began(ctx, view, m):
         st.html(card(ttl("The 30-year cycle", "الدورة الثلاثينية"), body))
     elif view.key == cv.UNIFIED:
         body = f"<div>{esc(m.note)}.</div>"
-        u = ctx["views"][cv.UMMALQURA].get_month(m.year, m.month)
-        if u is not None:
-            body += f"<div class='tq-muted'>Umm al-Qura begins this month on {u.start:%a %d %b %Y}; the unified start is {rel((m.start - u.start).days, 'Umm al-Qura')}.</div>"
         body += ("<div class='tq-muted'>Clause A: the Moon at least 5 deg high and 8 deg from the Sun at a sunset "
                  "anywhere before 00:00 UT. Clause B: the same on the Americas mainland after 00:00 UT, if the new "
                  "moon came before dawn in Wellington. The same day is the 1st everywhere on Earth.</div>")
@@ -572,8 +545,7 @@ def render_prayer(ctx):
     start = date(d0.year, d0.month, 1)
     end = (date(start.year + (start.month == 12), start.month % 12 + 1, 1) - timedelta(days=1))
     z = prayers(ctx, start, end)
-    uqv = ctx["views"][cv.UMMALQURA]
-    view = ctx["view"] if not ctx["view"].solar else uqv
+    view = ctx["view"]
     rows = []
     for d in sorted(z):
         r = z[d]

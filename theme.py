@@ -322,6 +322,8 @@ TITLE_AR = "تقويم السماء"
 def apply():
     st.html(CSS)
     st.html(FORCE_CSS)
+    # the components' stylesheets, page-wide as well (their own css= was not applied on Streamlit Cloud)
+    st.html("<style>" + QIBLA_LIVE_CSS + LOCATOR_CSS + "</style>")
 
 
 def branch_badge(branch: str) -> str:

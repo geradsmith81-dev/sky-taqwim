@@ -126,7 +126,7 @@ function askAndStart() {     // iPhone / iPad must ask, from a tap
   if (D && typeof D.requestPermission === 'function') {
     D.requestPermission().then(function (r) {
       if (r === 'granted') { G.view.btn.style.display = 'none'; start(true); }
-      else status('Compass not allowed. In Settings > Safari > (Motion & Orientation Access), allow it, then reload.', 'tq-ql-warn');
+      else status('Compass not allowed. Close and reopen the app, then tap the button again and choose Allow. If iOS does not ask again: Settings > Apps > Safari > Advanced > Website Data, delete streamlit.app, and try again.', 'tq-ql-warn');
     }).catch(function () { status('The compass could not be started on this device.', 'tq-ql-warn'); });
   } else { G.view.btn.style.display = 'none'; start(true); }
 }
@@ -175,6 +175,15 @@ export default function (component) {
 _COMPONENT = st.components.v2.component("skytaqwim_qibla", js=JS, css=CSS, isolate_styles=False)
 
 
+# The layout is also written on the elements themselves: on Streamlit Community Cloud the component's own
+# stylesheet was not applied, and without "position:absolute" the arrow fell below the dial instead of on it.
+_WRAP = "position:relative;padding-top:14px;flex:0 0 auto;"
+_LUBBER = ("position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;"
+           "border-left:9px solid transparent;border-right:9px solid transparent;border-top:13px solid #b5412c;")
+_STAGE = "position:relative;border-radius:50%;"
+_LAYER = "position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:50% 50%;line-height:0;"
+
+
 def _html(bearing: float, place: str, distance_km: float | None, decl: float | None, size: int, title_html: str) -> str:
     b = float(bearing) % 360.0
     pts = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"]
@@ -191,15 +200,17 @@ def _html(bearing: float, place: str, distance_km: float | None, decl: float | N
     dial = orn.qibla_compass_svg(0, size, needle=False)
     arrow = orn.qibla_arrow_svg(size)
     return (f"<div class='tq-card tq-ql-card'><h3>{title_html}</h3><div class='tq-qibla tq-ql'>"
-            f"<div class='tq-ql-wrap'><div class='tq-ql-lubber' title='The top of your phone'></div>"
-            f"<div class='tq-ql-stage' style='width:{size}px;height:{size}px'>"
-            f"<div class='tq-ql-dial'>{dial}</div><div class='tq-ql-arrow'>{arrow}</div></div></div>"
+            f"<div class='tq-ql-wrap' style='{_WRAP}'>"
+            f"<div class='tq-ql-lubber' title='The top of your phone' style='{_LUBBER}'></div>"
+            f"<div class='tq-ql-stage' style='{_STAGE}width:{size}px;height:{size}px'>"
+            f"<div class='tq-ql-dial' style='{_LAYER}'>{dial}</div>"
+            f"<div class='tq-ql-arrow' style='{_LAYER}'>{arrow}</div></div></div>"
             f"<div class='tq-ql-info'>"
             f"<div class='tq-qibla-deg'>{b:.1f}° <span class='tq-ar' lang='ar' dir='rtl'>القبلة</span></div>"
             f"<div class='tq-qibla-text'>Qibla{where}: {b:.1f}° from true north, toward the {word}.</div>{dist}{dec}"
-            f"<button type='button' class='tq-ql-btn'>Turn on the live compass</button>"
+            f"<button type='button' class='tq-ql-btn' style='display:none'>Turn on the live compass</button>"
             f"<div class='tq-ql-status' aria-live='polite'></div>"
-            f"<a class='tq-ql-tab' target='_blank' rel='noopener'>Open the app in its own tab for the compass</a>"
+            f"<a class='tq-ql-tab' target='_blank' rel='noopener' style='display:none'>Open the app in its own tab for the compass</a>"
             f"</div></div></div>")
 
 

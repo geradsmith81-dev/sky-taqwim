@@ -142,7 +142,7 @@ with c0:
 D = cv.DEFAULTS[branch]
 with c1:
     cal_key = st.radio("Calendar · التقويم", cv.ALL, key=f"cal_{branch}", **_idx(f"cal_{branch}", cv.ALL, D["calendar"]),
-                       horizontal=True, format_func=lambda k: cv.NAME[k],
+                       horizontal=True, format_func=lambda k: f"{cv.NAME[k]} · {cv.NAME_AR[k]}",
                        help=" ".join(f"{cv.NAME[k]}: {cv.HELP[k]}" for k in cv.ALL))
 with c2:
     page = st.radio("Page", list(PAGES), key="page", horizontal=True, format_func=lambda k: PAGES[k][0],

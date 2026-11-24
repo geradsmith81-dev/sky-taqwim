@@ -785,6 +785,17 @@ def _preset_text(pr: dict) -> str:
     return " · ".join(parts)
 
 
+def observance_chips(keys, align_right_from: int = 99) -> str:
+    """Clickable chips for sects.OBSERVANCES keys; each opens its summary (holiday_history)."""
+    by = {o[0]: o for o in sects.OBSERVANCES}
+    out = []
+    for i, k in enumerate(keys):
+        o = by.get(k)
+        if o:
+            out.append(hh.clickable(k, theme.chip(o[3], o[1], o[2]), align_right=i >= align_right_from))
+    return "".join(out)
+
+
 def render_traditions(ctx):
     msg = st.session_state.pop("_preset_msg", None)
     if msg:
@@ -794,6 +805,13 @@ def render_traditions(ctx):
             "days, the calendar, where and how the crescent is looked for, and the usual prayer-time method. "
             "Practice varies within every group, so these are models of the main practice named. Groups outside "
             "the Sunni and Shia lists are shown with the nearer list of holy days.</div>")
+    cells = "".join(f"<div>{observance_chips([o[0]])}<br>{esc(o[4])}</div>" for o in sects.OBSERVANCES)
+    st.html(card(ttl("Urs, Mawlid and commemorations", "الأعراس والموالد والمناسبات"),
+                 "<div class='tq-muted'>Click a name for a short summary. The switch <b>"
+                 + ("Urs and Sufi shrine festivals" if ctx["branch"] == "sunni"
+                    else "Urs, shrine festivals and more commemorations")
+                 + "</b> under Holy days puts the dated ones in the calendar.</div>"
+                 + f"<div class='tq-obs-grid'>{cells}</div>"))
     groups = {g for g, _ in sects.GROUPS}
     byc = sects.by_calendar()
     phone = device.phone()
@@ -807,10 +825,13 @@ def render_traditions(ctx):
         for s_, label, preset in rows:
             n += 1
             parent = f" <span class='tq-muted'>({esc(s_['parent'])})</span>" if s_.get("parent") else ""
+            obs = sects.SECT_OBSERVANCES.get(s_["key"])
+            obs_html = (f"<div class='tq-obs-row'><span class='tq-muted' style='font-size:.85rem'>Observances:</span>"
+                        f"{observance_chips(obs)}</div>") if obs else ""
             body = (f"<div class='tq-card' style='margin-bottom:.35rem;padding:.55rem .8rem'>"
                     f"<b>{bi(s_['name'], s_['ar'])}</b>{parent} · <span class='tq-muted'>{esc(s_['group'])}</span>"
                     f"<div>{esc(label)}</div>"
-                    f"<div class='tq-muted' style='font-size:.82rem'>{esc(_preset_text(preset))}</div></div>")
+                    f"<div class='tq-muted' style='font-size:.82rem'>{esc(_preset_text(preset))}</div>{obs_html}</div>")
             if phone:
                 st.html(body)
                 st.button("Use", key=f"use_{n}", on_click=apply_preset, args=(preset, f"{s_['name']} — {label}"),
@@ -825,7 +846,11 @@ def render_traditions(ctx):
         st.html("<h3 style='margin:.9rem 0 .1rem 0'>Without a calendar of their own · بلا تقويم خاص</h3>"
                 + "".join(f"<div class='tq-card' style='margin-bottom:.35rem;padding:.55rem .8rem'><b>"
                           f"{bi(s_['name'], s_['ar'])}</b> · <span class='tq-muted'>{esc(s_['group'])}</span>"
-                          f"<div>{esc(s_['how'])}</div></div>" for s_ in none))
+                          f"<div>{esc(s_['how'])}</div>"
+                          + (f"<div class='tq-obs-row'><span class='tq-muted' style='font-size:.85rem'>Observances:"
+                             f"</span>{observance_chips(sects.SECT_OBSERVANCES[s_['key']])}</div>"
+                             if s_["key"] in sects.SECT_OBSERVANCES else "")
+                          + "</div>" for s_ in none))
     st.html("<h3 style='margin:.9rem 0 .1rem 0'>The traditions in detail · تفصيل</h3>")
     for g, g_ar in sects.GROUPS:
         for s_ in [x for x in sects.SECTS if x["group"] == g and x["uses"]]:

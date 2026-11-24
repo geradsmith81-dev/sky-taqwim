@@ -23,9 +23,9 @@ from typing import NamedTuple
 
 from arabic_names import MONTHS, SOLAR_MONTHS, SACRED_MONTHS
 
-KINDS = ("eid", "sacred", "fast", "night", "mourning", "birth", "month", "hajj", "civil")
-_KIND_ORDER = {k: i for i, k in enumerate(("eid", "sacred", "mourning", "birth", "night", "hajj", "fast",
-                                           "month", "civil"))}
+KINDS = ("eid", "sacred", "fast", "night", "mourning", "birth", "shrine", "month", "hajj", "civil")
+_KIND_ORDER = {k: i for i, k in enumerate(("eid", "sacred", "mourning", "birth", "shrine", "night", "hajj",
+                                           "fast", "month", "civil"))}
 BRANCHES = ("sunni", "shia")
 
 MUHARRAM, SAFAR, RABI1, RABI2, JUMADA1, JUMADA2, RAJAB, SHABAN, RAMADAN, SHAWWAL, DHUQADAH, DHUHIJJAH = range(1, 13)
@@ -275,6 +275,51 @@ SHIA = [
      "the 21st, 25th or 27th.", None, True),
 ]
 
+
+# Urs and Sufi shrine festivals (switch "shrines"), shown in both traditions. Each is kept at the shrine by the
+# local moon sighting, which can differ by a day from the calendar shown.
+# (month, day, name, arabic, kind, key, note, evening)
+SHRINES = [
+    (MUHARRAM, 5, "Urs of Baba Farid: Gate of Paradise opens (Pakpattan)", "عرس بابا فريد الدين (باكبتن)", "shrine",
+     "urs_baba_farid", "The urs runs 1-10 Muharram at Pakpattan, Punjab; the Gate of Paradise (Bahishti Darwaza) "
+     "opens on the night of the 5th.", False),
+    (SAFAR, 14, "Urs of Shah Abdul Latif Bhittai (Bhit Shah)", "عرس شاه عبد اللطيف البهتائي", "shrine", "urs_bhittai",
+     "Three days from 14 Safar at Bhit Shah, Sindh; a public holiday in Sindh.", False),
+    (SAFAR, 18, "Grand Magal of Touba", "المغال الكبير في طوبى", "shrine", "magal_touba",
+     "Mouride pilgrimage to Touba, Senegal, for Amadou Bamba's departure into exile (18 Safar 1313 / "
+     "10 August 1895).", False),
+    (SAFAR, 18, "Urs of Data Ganj Bakhsh (Lahore)", "عرس علي الهجويري (داتا كنج بخش)", "shrine", "urs_data",
+     "18-20 Safar at Data Darbar, Lahore; a local holiday in Lahore.", False),
+    (RABI2, 11, "Gyarhvin Sharif: urs of Abd al-Qadir al-Jilani", "عرس الشيخ عبد القادر الجيلاني", "shrine", "gyarhvin",
+     "Death day of the founder of the Qadiriyya (561 AH), kept especially in South Asia.", False),
+    (RABI2, 18, "Urs of Nizamuddin Awliya (Delhi)", "عرس الشيخ نظام الدين أولياء", "shrine", "urs_nizamuddin",
+     "At the Nizamuddin Dargah, Delhi; he died on 18 Rabi' al-Thani 725 (1325).", False),
+    (RAJAB, 6, "Urs of Khwaja Mu'in al-Din Chishti (Ajmer)", "عرس الخواجة معين الدين الجشتي", "shrine", "urs_ajmer",
+     "1-6 Rajab at Ajmer, India; the 6th (Chhati Sharif) is the main day.", False),
+    (SHABAN, 18, "Urs of Lal Shahbaz Qalandar (Sehwan)", "عرس لعل شهباز قلندر", "shrine", "urs_lal_shahbaz",
+     "18-20 Sha'ban at Sehwan Sharif, Sindh; three days of dhamal.", False),
+]
+# Rumi's Seb-i Arus keeps the civil date of his death (17 December), not a Hijri one.
+SEB_I_ARUS = ("Seb-i Arus: Rumi's 'wedding night' (Konya)", "شب عروس مولانا جلال الدين الرومي", "shrine",
+              "seb_i_arus", "Rumi died on 17 December 1273; Konya holds sema ceremonies from 7 to 17 December. "
+              "A civil date, not a Hijri one.")
+
+# Further Twelver Shia commemorations (same switch, Shia tradition only).
+SHIA_COMMEMORATIONS = [
+    (RABI2, 10, "Death of Fatima al-Ma'suma", "وفاة السيدة فاطمة المعصومة", "mourning", "masuma",
+     "Sister of Imam al-Rida; died in Qom in 201 AH. Mourning is often held 10-12 Rabi' al-Thani.", True),
+    (RAJAB, 15, "Death of Zaynab bint Ali", "وفاة السيدة زينب بنت علي", "mourning", "zaynab",
+     "Daughter of Ali and Fatima and witness of Karbala; her main shrine is at al-Sayyida Zaynab near Damascus.", True),
+    (RAMADAN, 10, "Death of Khadija", "وفاة السيدة خديجة الكبرى", "mourning", "khadija",
+     "The Prophet's first wife and the first to believe; died in Mecca three years before the Hijra.", True),
+    (SHAWWAL, 8, "Yawm al-Hadm: demolition of al-Baqi'", "يوم هدم البقيع", "mourning", "baqi",
+     "Anniversary of the levelling of the shrines of al-Baqi' in Medina, 8 Shawwal 1344 (21 April 1926).", True),
+    (DHUQADAH, 1, "Birth of Fatima al-Ma'suma", "ولادة السيدة فاطمة المعصومة", "birth", "masuma",
+     "Girls' Day in Iran; opens the Ten Days of Karama, which end with the birth of Imam al-Rida on the 11th.", True),
+    (DHUHIJJAH, 9, "Martyrdom of Muslim ibn Aqil", "شهادة مسلم بن عقيل", "mourning", "muslim_ibn_aqil",
+     "Husayn's envoy to Kufa, executed on the Day of Arafah, 60 AH.", True),
+]
+
 _TABLES = {"sunni": SUNNI, "shia": SHIA}
 
 # Months whose first day already has its own holiday, so no separate new-month entry is added.
@@ -320,6 +365,16 @@ def _greg(cal, y: int, m: int, d: int) -> date | None:
         return None
 
 
+def _hijri_of(cal, year: int, g: date):
+    """(year, month, day) of Gregorian date g inside Hijri `year` of `cal`, found from the month starts
+    (works for every calendar with to_gregorian), or None."""
+    for m in range(1, 13):
+        s, n = _greg(cal, year, m, 1), _month_length(cal, year, m)
+        if s is not None and n and s <= g < s + timedelta(days=n):
+            return year, m, (g - s).days + 1
+    return None
+
+
 def _note_for(note, branch: str) -> str:
     return note.get(branch, "") if isinstance(note, dict) else note
 
@@ -339,7 +394,7 @@ def _sort(hs: list[Holiday]) -> list[Holiday]:
 # public
 # ----------------------------------------------------------------------------------------------
 def holidays_for_year(cal, year: int, branch: str, *, month_starts: bool = True, imams: bool = True,
-                      fasts: bool = True, nights: bool = True) -> list[Holiday]:
+                      fasts: bool = True, nights: bool = True, shrines: bool = True) -> list[Holiday]:
     """The holy days of Hijri `year` (1 Muharram to the end of Dhu al-Hijjah) for one branch.
 
     month_starts: a 'New month' entry on the 1st of each month (except Muharram, Ramadan, Shawwal,
@@ -348,6 +403,8 @@ def holidays_for_year(cal, year: int, branch: str, *, month_starts: bool = True,
     fasts:        recommended fasts (Sunni: Tasu'a and Ashura, Arafah, the white days, six of Shawwal;
                   Shia: Arafah).
     nights:       special nights beyond the main ones (last ten nights, mid-Sha'ban, al-Raghaib).
+    shrines:      the urs of great Sufi saints and other shrine festivals (both traditions), and (Shia)
+                  further commemorations: Khadija, Zaynab, Fatima al-Ma'suma, Muslim ibn Aqil, al-Baqi'.
     """
     branch = _check_branch(branch)
     enabled = {None: True, "imams": imams, "fasts": fasts, "nights": nights}
@@ -369,6 +426,22 @@ def holidays_for_year(cal, year: int, branch: str, *, month_starts: bool = True,
     for m, d, name, ar, kind, key, note, opt, evening in _TABLES[branch]:
         if enabled[opt]:
             add(m, d, name, ar, kind, key, note, evening, branch)
+
+    if shrines:
+        for m, d, name, ar, kind, key, note, evening in SHRINES:
+            add(m, d, name, ar, kind, key, note, evening, "both")
+        if branch == "shia":
+            for m, d, name, ar, kind, key, note, evening in SHIA_COMMEMORATIONS:
+                add(m, d, name, ar, kind, key, note, evening, "shia")
+        # Seb-i Arus: every 17 December that falls inside this Hijri year
+        y0, y1 = _greg(cal, year, MUHARRAM, 1), _greg(cal, year + 1, MUHARRAM, 1)
+        if y0 is not None and y1 is not None:
+            for gy in range(y0.year, y1.year + 1):
+                g = date(gy, 12, 17)
+                if y0 <= g < y1:
+                    name, ar, kind, key, note = SEB_I_ARUS
+                    hd = _hijri_of(cal, year, g)
+                    out.append(Holiday(g, name, ar, kind, HijriDay(*hd) if hd else None, note, key, False, "both"))
 
     # Laylat al-Raghaib: the night before the first Friday of Rajab that follows the month's first Thursday.
     if nights:

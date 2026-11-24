@@ -447,7 +447,7 @@ H = {
         "Ibn Ziyad and the caliph Yazid. Her shrine at al-Sayyida Zaynab, south of Damascus, is a major "
         "place of Shia pilgrimage. A mosque in Cairo also bears her name and is much loved by Egyptian "
         "Sunnis and Sufis. The Iranian calendar keeps her birth on 5 Jumada al-Ula, which is also Nurses' "
-        "Day in Iran.",
+        "Day in Iran. Shia communities mourn her death on 15 Rajab; the year is given as 62 or 63 AH.",
         "al-Tabari, Ta'rikh, year 61 AH; Ibn Abi Tahir Tayfur, Balaghat al-nisa'; al-Mufid, al-Irshad"),
     "abbas": ("al-Abbas ibn Ali", "أبو الفضل العباس",
         "Al-Abbas, son of Ali and Umm al-Banin, was Husayn's half-brother and his standard-bearer at "
@@ -499,7 +499,180 @@ H = {
 }
 
 # Name prefixes as holidays.py produces them; longer prefixes first.
+# ---------------------------------------------------------------------------------------------- urs, shrine
+# festivals and Shia commemorations (switch "shrines"; the four general entries are also linked on the
+# Traditions page). Dates of the festivals were checked against the shrines' own announcements and news reports
+# (November 2026).
+H.update({
+    "urs": ("Urs", "العرس",
+            "Urs (Arabic 'urs, 'wedding') is the yearly festival at the tomb of a Sufi saint on the anniversary of "
+            "his or her death. The death is called a wedding because devotees see it as the saint's union with God. "
+            "It is kept by the Hijri date at the shrine (dargah or mazar), above all in South Asia, where the "
+            "largest draw hundreds of thousands. Typical rites are the washing of the tomb, the laying of a cloth "
+            "(chadar) and flowers, Qur'an recitation, devotional music (qawwali, sama'), remembrance of God (dhikr) "
+            "and free meals (langar), with a fair around the shrine. Hindus and Sikhs also come to the great ones. "
+            "Each shrine follows its own country's moon sighting, so its dates can differ by a day from the "
+            "calendar shown. Barelvi scholars defend the urs; Deobandi and Salafi scholars criticise its practices.",
+            "P. M. Currie, The Shrine and Cult of Mu'in al-Din Chishti of Ajmer (Delhi 1989); C. W. Ernst and "
+            "B. B. Lawrence, Sufi Martyrs of Love: The Chishti Order in South Asia and Beyond (New York 2002)"),
+    "sufi_shrine_festivals": ("Sufi shrine festivals", "موالد الأولياء ومواسمهم",
+            "Across the Muslim world the tombs of saints hold yearly festivals that join worship, music and fair. "
+            "In Egypt and Sudan they are called mawlid (a saint's 'birthday', though not always kept on it); in "
+            "Morocco moussem (mawsim, 'season'); in Senegal magal; in South Asia urs; in Konya Seb-i Arus. Pilgrims "
+            "visit the tomb, Sufi orders hold dhikr and processions, and markets and amusements gather outside. "
+            "Most keep a Hijri date, but not all: the great mawlid of al-Sayyid al-Badawi at Tanta is held in "
+            "October by the solar calendar, and Rumi's commemoration keeps 17 December. Reformist and Salafi "
+            "critics oppose the festivals, and some shrines have been attacked, as at Sehwan in 2017. The switch "
+            "'Urs and Sufi shrine festivals' under Holy days adds the dated ones in this app to the calendar.",
+            "S. Schielke, The Perils of Joy: Contesting Mulid Festivals in Contemporary Egypt (Syracuse 2012); "
+            "C. A. Babou, Fighting the Greater Jihad: Amadu Bamba and the Founding of the Muridiyya of Senegal "
+            "(Athens, Ohio 2007); J. W. Frembgen, At the Shrine of the Red Sufi (Karachi 2011)"),
+    "shia_commemorations": ("Shia commemorations", "المناسبات الشيعية",
+            "The Twelver Shia year is marked by days of mourning for the deaths of the Prophet, Fatima and the "
+            "Imams, and days of joy for their births. The mourning season runs from 1 Muharram to the end of Safar, "
+            "centred on Ashura and Arba'in. Communities meet in majlis gatherings, where the sufferings of Karbala "
+            "are narrated (rawza-khwani) and elegies are sung (marsiya, nawha), with chest-beating (matam), "
+            "processions with standards ('alam) and models of Husayn's tomb (ta'ziya), and in Iran the passion "
+            "play (ta'ziyeh). Pilgrimage (ziyara) to the shrines of Najaf, Karbala, Kazimiyya, Samarra, Mashhad, "
+            "Qom and Damascus is central. Alevis keep a twelve-day fast in Muharram for the twelve Imams. This app "
+            "shows the main days by default; the Imams switch adds the other days of the Imams, and the "
+            "commemorations switch adds those of Khadija, Zaynab, Fatima al-Ma'suma, Muslim ibn Aqil and al-Baqi'.",
+            "M. Ayoub, Redemptive Suffering in Islam (The Hague 1978); Y. Nakash, 'An Attempt to Trace the Origin "
+            "of the Rituals of Ashura', Die Welt des Islams 33 (1993) 161-181; K. S. Aghaie, The Martyrs of "
+            "Karbala (Seattle 2004); Abbas al-Qummi, Mafatih al-jinan"),
+    "urs_ajmer": ("Urs of Khwaja Mu'in al-Din Chishti", "عرس الخواجة معين الدين الجشتي",
+            "Mu'in al-Din Chishti, called Gharib Nawaz ('friend of the poor'), brought the Chishti order to India "
+            "and settled at Ajmer, where he died on 6 Rajab 633 (1236). Tradition says he withdrew to his cell for "
+            "his last six days, so the urs runs from 1 to 6 Rajab. The 6th, Chhati Sharif, is the main day, when "
+            "the order's spiritual genealogy (shajra) is read at the tomb. Qawwali is sung each night and food is "
+            "cooked for all in two great cauldrons (degs). The Mughal emperor Akbar went to the shrine on foot "
+            "after the birth of his son Salim, and Indian prime ministers still send a chadar. Muslims, Hindus and "
+            "others come in hundreds of thousands, one of the largest gatherings in South Asia.",
+            "P. M. Currie, The Shrine and Cult of Mu'in al-Din Chishti of Ajmer (Delhi 1989); Abu'l-Fazl, "
+            "Akbarnama; Ajmer Dargah announcements (ajmer-sharif.com)"),
+    "urs_data": ("Urs of Data Ganj Bakhsh", "عرس علي الهجويري",
+            "Ali ibn Uthman al-Hujwiri of Ghazni, called Data Ganj Bakhsh ('the master who bestows treasure'), "
+            "settled in Lahore and wrote the Kashf al-mahjub, the oldest treatise on Sufism in Persian. He died in "
+            "Lahore in the later 11th century. His shrine, Data Darbar, is one of the largest in South Asia and is "
+            "run by the Punjab Auqaf Department. The urs is kept from 18 to 20 Safar: a chadar is laid on the "
+            "tomb, and there is Qur'an recitation, poetry in praise of the Prophet (na't), qawwali and free meals. "
+            "Lahore has a local holiday. Mu'in al-Din Chishti is said to have kept a retreat at the tomb before "
+            "going on to Ajmer.",
+            "al-Hujwiri, Kashf al-mahjub, tr. R. A. Nicholson (Leiden 1911); datadarbar.pk; Economy.pk, "
+            "24 August 2024"),
+    "urs_bhittai": ("Urs of Shah Abdul Latif Bhittai", "عرس شاه عبد اللطيف البهتائي",
+            "Shah Abdul Latif (1689-1752) is the greatest poet of the Sindhi language. His verses, collected as "
+            "Shah jo Risalo, are sung at his shrine at Bhit Shah by its faqirs to the long-necked tambooro. The "
+            "three-day urs begins on 14 Safar, when the governor of Sindh lays a wreath at the tomb, and includes "
+            "nights of music, a literary conference and a crafts fair. Sindh keeps the first day as a public "
+            "holiday.",
+            "A. Schimmel, Pain and Grace (Leiden 1976); Dawn, 'Public holiday in Sindh on Wednesday for Shah "
+            "Abdul Latif Bhittai's urs' (2026); The Nation (Lahore), 8 August 2025"),
+    "magal_touba": ("Grand Magal of Touba", "المغال الكبير في طوبى",
+            "Amadou Bamba (1853-1927), founder of the Mouride (Muridiyya) Sufi order of Senegal, was arrested by "
+            "the French on 18 Safar 1313 (10 August 1895) and exiled to Gabon for seven years. He asked his "
+            "followers to keep the day as one of thanksgiving, not grief. The Magal ('celebration' in Wolof) has "
+            "been held at Touba since 1928, and on 18 Safar since 1946, when the caliph Falilou Mbacke moved it to "
+            "the anniversary of the exile. Millions of pilgrims come to the Great Mosque, where Bamba is buried, "
+            "for prayer, the chanting of his poems (qasa'id) and shared meals. It is a public holiday in Senegal.",
+            "C. A. Babou, Fighting the Greater Jihad (Athens, Ohio 2007); SenePlus, 'Aux origines du Grand "
+            "Magal' (2023); Wikipedia, 'Grand Magal of Touba'"),
+    "gyarhvin": ("Gyarhvin Sharif", "عرس الشيخ عبد القادر الجيلاني",
+            "Abd al-Qadir al-Jilani (1077-1166), a Hanbali preacher of Baghdad, is the founder of the Qadiriyya, "
+            "the most widespread Sufi order. He died on 11 Rabi' al-Thani 561 and is buried at Bab al-Shaykh in "
+            "Baghdad, where his shrine is visited all year. In South Asia the 11th of every month (gyarhvin, "
+            "'the eleventh') is kept in his memory with food blessed and shared (niyaz), and 11 Rabi' al-Thani as "
+            "the great eleventh (Bari Gyarhvin). Some traditions date his death to the 17th instead.",
+            "W. Braune, ''Abd al-Qadir al-Djilani', Encyclopaedia of Islam, 2nd ed.; R. Safvi, 'Gyarvin Sharif' "
+            "(ranasafvi.com); al-Shattanawfi, Bahjat al-asrar"),
+    "urs_nizamuddin": ("Urs of Nizamuddin Awliya", "عرس الشيخ نظام الدين أولياء",
+            "Nizamuddin Awliya (1238-1325), the Chishti master of Delhi called Mahbub-e Ilahi ('beloved of God'), "
+            "taught love of God and service of the poor and kept his hospice open to all. He died on 18 Rabi' "
+            "al-Thani 725 (3 April 1325). His disciple the poet Amir Khusraw, buried beside him, is credited with "
+            "shaping the qawwali still sung there. The urs at the Nizamuddin Dargah in Delhi is kept around 17 and "
+            "18 Rabi' al-Thani with qawwali, chadars and free meals; the shrine keeps a separate urs for Amir "
+            "Khusraw.",
+            "Amir Hasan Sijzi, Fawa'id al-fu'ad, tr. B. B. Lawrence, Nizam ad-din Awliya: Morals for the Heart "
+            "(New York 1992); Wikipedia, 'Nizamuddin Auliya'"),
+    "urs_lal_shahbaz": ("Urs of Lal Shahbaz Qalandar", "عرس لعل شهباز قلندر",
+            "Sayyid Uthman Marwandi, called Lal Shahbaz Qalandar ('the red royal falcon'), was a wandering dervish "
+            "who settled at Sehwan in Sindh and died there in 1274. His shrine is the home of dhamal, an ecstatic "
+            "dance to great drums, and of the malang ascetics. The urs from 18 to 20 Sha'ban draws hundreds of "
+            "thousands of Sunni, Shia and Hindu devotees; many Hindus link him with Jhulelal, the river saint. On "
+            "16 February 2017 a suicide bomber killed about ninety people during the evening dhamal; the dhamal "
+            "was danced again the next day.",
+            "J. W. Frembgen, At the Shrine of the Red Sufi (Karachi 2011); Geo News, 'Devotees reach Sehwan to "
+            "commemorate Lal Shahbaz Qalandar's urs'; Daily Pakistan, 12 February 2025"),
+    "urs_baba_farid": ("Urs of Baba Farid", "عرس بابا فريد الدين",
+            "Farid al-Din Mas'ud Ganj-i Shakar (d. 1265), the Chishti master of Pakpattan in the Punjab and teacher "
+            "of Nizamuddin Awliya, wrote the first great poetry in Punjabi; verses under his name are in the Sikh "
+            "scripture, the Guru Granth Sahib. The Punjab government's district page dates his death to 5 Muharram "
+            "664. The urs is held from 1 to 10 Muharram. On the night of the 5th the silver 'Gate of Paradise' "
+            "(Bahishti Darwaza) of his tomb is opened, and devotees pass through it until the dawn prayer of the "
+            "10th.",
+            "R. M. Eaton, 'The Political and Religious Authority of the Shrine of Baba Farid', in B. D. Metcalf "
+            "(ed.), Moral Conduct and Authority (Berkeley 1984); Pakpattan District, Government of the Punjab "
+            "(pakpattan.punjab.gov.pk); Dawn, 2025"),
+    "seb_i_arus": ("Seb-i Arus", "شب عروس",
+            "Jalal al-Din Rumi, the poet of the Masnavi, died in Konya on 17 December 1273. His followers call the "
+            "night of his death Seb-i Arus (Persian shab-e 'arus), the 'wedding night' of his union with God. The "
+            "Mevlevi order that grew from his circle is known for the sema, the turning prayer of the whirling "
+            "dervishes. Turkey closed the Sufi lodges in 1925, but Konya has long held the commemoration each "
+            "year from 7 to 17 December, with sema ceremonies at the Mevlana Cultural Centre and visits to his "
+            "tomb in the Mevlana Museum. It keeps today's civil date, so it does not move through the seasons as "
+            "the Hijri festivals do. UNESCO lists the Mevlevi sema as intangible cultural heritage.",
+            "F. D. Lewis, Rumi: Past and Present, East and West (Oxford 2000); Hurriyet Daily News, 17 December "
+            "2020; Turkiye Ministry of Culture and Tourism (goturkiye.com)"),
+    "khadija": ("Khadija bint Khuwaylid", "خديجة بنت خويلد",
+            "Khadija, a merchant of Mecca, married Muhammad some fifteen years before his mission and was the "
+            "first to believe in it. She was the mother of Fatima. She died in Mecca in Ramadan of the tenth year "
+            "of the mission (619), about three years before the Hijra, and is buried in the cemetery of al-Ma'la. "
+            "Her death and that of Abu Talib in the same year gave it the name 'the year of sorrow' ('am al-huzn). "
+            "Shia communities hold mourning gatherings on 10 Ramadan; Sunnis honour her as the first of the "
+            "Mothers of the Believers.",
+            "Ibn Hisham, al-Sira al-nabawiyya; Ibn Sa'd, al-Tabaqat al-kubra, vol. 8; Abbas al-Qummi, Mafatih "
+            "al-jinan"),
+    "masuma": ("Fatima al-Ma'suma", "فاطمة المعصومة",
+            "Fatima, daughter of the seventh Imam Musa al-Kazim and full sister of the eighth Imam al-Rida, was "
+            "born in Medina on 1 Dhu al-Qa'dah 173. In 201 she set out to join her brother in Khurasan, fell ill "
+            "at Saveh and was brought to Qom, where she died some seventeen days later. The date most often kept "
+            "is 10 Rabi' al-Thani; others give the 12th, so mourning is often held over 10-12. Her shrine made Qom "
+            "a city of pilgrimage and later the leading centre of Shia learning in Iran. Her birthday is Girls' "
+            "Day in Iran and opens the Ten Days of Karama, which end with the birth of Imam al-Rida on "
+            "11 Dhu al-Qa'dah.",
+            "al-Majlisi, Bihar al-anwar, vol. 48; M. Jaffer, Lady Fatima Masuma (a) of Qum (Qum, Jami'at "
+            "al-Zahra); Wikipedia, 'Twelver Shia holy days'"),
+    "muslim_ibn_aqil": ("Muslim ibn Aqil", "مسلم بن عقيل",
+            "Muslim, son of Aqil ibn Abi Talib and cousin of Husayn, was sent by Husayn to Kufa in 60 AH to test "
+            "the city's promises of support. Thousands pledged to him, but the new governor Ubayd Allah ibn Ziyad "
+            "broke the movement with threats and bribes, and Muslim was left alone. He hid in the house of a "
+            "woman named Taw'a, was betrayed, and was executed with Hani ibn Urwa, who had sheltered him earlier, "
+            "on 9 Dhu al-Hijjah 60 (680), the Day of Arafah. Husayn had set out from Mecca for Iraq the day "
+            "before. Muslim's shrine stands beside the Great Mosque of Kufa.",
+            "al-Tabari, Ta'rikh, year 60 AH (after Abu Mikhnaf); al-Mufid, al-Irshad"),
+    "baqi": ("Yawm al-Hadm: the demolition of al-Baqi'", "يوم هدم البقيع",
+            "Al-Baqi', the old cemetery of Medina, holds the graves of four of the Twelve Imams (al-Hasan, "
+            "al-Sajjad, al-Baqir and al-Sadiq), of many of the Prophet's family and wives, and of thousands of "
+            "Companions; Shia tradition adds that Fatima may lie there. Its domes and tombs were levelled by "
+            "Wahhabi forces first in 1806 and again, after the Saudi conquest of the Hijaz, on 8 Shawwal 1344 "
+            "(21 April 1926), under a ruling of the scholars of Medina obtained by the judge Abd Allah ibn "
+            "Bulayhid. The demolition drew protests across the Muslim world, and Iran declared a day of national "
+            "mourning. Shia communities keep 8 Shawwal as Yawm al-Hadm, 'the Day of Demolition' (Yaum-e Gham in "
+            "South Asia), with gatherings and calls to rebuild the shrines.",
+            "Wikishia, 'Demolition of al-Baqi''; Wikipedia, 'Demolition of al-Baqi'; The Zahra Trust USA, "
+            "'21 April 1926: What happened at Jannat al-Baqi' (2026)"),
+})
+
 _RULES = [
+    # urs, shrine festivals and the further Shia commemorations (before "Birth of Fatima", which would also
+    # match "Birth of Fatima al-Ma'suma")
+    ("Urs of Baba Farid", "urs_baba_farid"), ("Urs of Shah Abdul Latif", "urs_bhittai"),
+    ("Grand Magal", "magal_touba"), ("Urs of Data Ganj Bakhsh", "urs_data"), ("Gyarhvin", "gyarhvin"),
+    ("Urs of Nizamuddin", "urs_nizamuddin"), ("Urs of Khwaja Mu'in al-Din", "urs_ajmer"),
+    ("Urs of Lal Shahbaz", "urs_lal_shahbaz"), ("Seb-i Arus", "seb_i_arus"),
+    ("Death of Fatima al-Ma'suma", "masuma"), ("Birth of Fatima al-Ma'suma", "masuma"),
+    ("Death of Zaynab", "zaynab"), ("Death of Khadija", "khadija"), ("Yawm al-Hadm", "baqi"),
+    ("Martyrdom of Muslim ibn Aqil", "muslim_ibn_aqil"),
     ("Hijri New Year", "hijri_new_year"),
     ("New month: Muharram", "sacred_months"), ("New month: Rajab", "sacred_months"),
     ("New month: Dhu al-Qa'dah", "sacred_months"), ("New month: Dhu al-Hijjah", "sacred_months"),
@@ -543,7 +716,7 @@ def key_for(name: str) -> str | None:
 
 
 # Entries whose original-script title is Persian rather than Arabic.
-PERSIAN_TITLES = frozenset({"nowruz", "sizdah_bedar", "yalda", "chaharshanbe_suri"})
+PERSIAN_TITLES = frozenset({"nowruz", "sizdah_bedar", "yalda", "chaharshanbe_suri", "seb_i_arus"})
 
 
 def body_html(key: str) -> str:

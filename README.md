@@ -17,6 +17,7 @@ The Islamic calendar for **Sunni or Shia** practice, from NASA JPL astronomy (DE
   - Shia methods: Leva Institute of Qum, and Tehran, with Ja'fari Maghrib and midnight.
   - Plus imsak, the Moon, and a live qibla compass: on a phone held flat the arrow turns with the phone and points to the Kaaba (corrected for magnetic declination).
 - **Pages:** Today, Traditions, Month, Year & holy days (with .ics and .csv downloads), Prayer times, Crescent, Compare, How it works.
+- **Urs and shrine festivals:** an optional layer with the urs of nine great Sufi saints (Ajmer, Lahore, Delhi, Sehwan, Pakpattan, Bhit Shah, Baghdad, Touba, Konya) and further Shia commemorations; the Traditions page links summaries of the urs, Mawlid, Shia commemorations and Sufi shrine festivals.
 - **Sources:** each holy day opens a short sourced history (48 entries), and both traditions are presented in their own terms.
 - **Location:** found automatically (the browser asks once). Proper nouns are also shown in Arabic script (Persian for the solar months). The design follows early Islamic (Umayyad and Abbasid) art.
 

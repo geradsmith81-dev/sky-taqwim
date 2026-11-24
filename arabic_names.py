@@ -195,11 +195,13 @@ TERMS_FA = {
 # Holiday kinds shared with holidays.py and theme.py.
 KIND_EN = {
     "eid": "Eid", "sacred": "Holy day", "fast": "Fast", "night": "Special night", "mourning": "Mourning",
-    "birth": "Birth", "month": "New month", "hajj": "Hajj days", "civil": "Solar calendar",
+    "birth": "Birth", "shrine": "Urs or shrine festival", "month": "New month", "hajj": "Hajj days",
+    "civil": "Solar calendar",
 }
 KIND_AR = {
     "eid": "عيد", "sacred": "مناسبة دينية", "fast": "صيام", "night": "ليلة مباركة", "mourning": "عزاء",
-    "birth": "مولد", "month": "غرة الشهر", "hajj": "أيام الحج", "civil": "مناسبة شمسية",
+    "birth": "مولد", "shrine": "عرس ومولد الأولياء", "month": "غرة الشهر", "hajj": "أيام الحج",
+    "civil": "مناسبة شمسية",
 }
 
 BRANCH_LABEL = {"sunni": ("Sunni", "أهل السنة"), "shia": ("Shia", "الشيعة"), "both": ("Sunni and Shia", "السنة والشيعة")}

@@ -216,6 +216,14 @@ with panel:
     o_imams = (st.toggle("Births and martyrdoms of the Twelve Imams", key="imams",
                          **({} if "imams" in st.session_state else {"value": True}))
                if branch == "shia" else False)
+    o_shrines = st.toggle("Urs and Sufi shrine festivals" if branch == "sunni"
+                          else "Urs, shrine festivals and more commemorations",
+                          value=True, key=f"shrines_{branch}",
+                          help="The urs (death anniversaries) of great Sufi saints and other shrine festivals: Ajmer, "
+                               "Lahore, Delhi, Sehwan, Pakpattan, Bhit Shah, Touba, Baghdad and Konya"
+                               + ("" if branch == "sunni" else "; and the deaths of Khadija, Zaynab and Fatima "
+                                  "al-Ma'suma, the martyrdom of Muslim ibn Aqil and the demolition of al-Baqi'")
+                               + ". Click a name in the calendar for its history.")
     o_month = st.toggle("First day of each month", value=True, key=f"months_{branch}")
 
     st.subheader("Crescent sighting · رؤية الهلال")
@@ -242,7 +250,7 @@ with panel:
 
 # ---------------------------------------------------------------------------------------------- build the views
 today = datetime.now(ZoneInfo(place["tz"])).date()
-opts = {"month_starts": o_month, "imams": o_imams, "fasts": o_fasts, "nights": o_nights}
+opts = {"month_starts": o_month, "imams": o_imams, "fasts": o_fasts, "nights": o_nights, "shrines": o_shrines}
 sp, sp_name = cv.sighting_place(ref, place)
 if sp is None:
     s_cal = sighting_cal(None, None, None, "Mecca", crit, None)

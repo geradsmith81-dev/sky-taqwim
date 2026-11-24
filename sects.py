@@ -197,3 +197,24 @@ def by_calendar() -> dict[str, list[tuple[dict, str, dict]]]:
         for cal, label, preset in s["uses"]:
             out.setdefault(cal, []).append((s, label, preset))
     return out
+
+
+# Devotional observances linked from the Traditions page (holiday_history keys: each opens a short summary).
+# (key, title, arabic, chip kind, one-line description)
+OBSERVANCES = [
+    ("urs", "Urs", "العرس", "shrine",
+     "The death anniversary of a Sufi saint, kept as a festival at the tomb."),
+    ("mawlid", "Mawlid", "المولد النبوي", "birth",
+     "The Prophet's birthday: 12 Rabi' al-Awwal for most Sunnis, 17 for Twelver Shia."),
+    ("shia_commemorations", "Shia commemorations", "المناسبات الشيعية", "mourning",
+     "Days of mourning and joy for the Prophet's family, with majlis gatherings and pilgrimage."),
+    ("sufi_shrine_festivals", "Sufi shrine festivals", "موالد الأولياء ومواسمهم", "shrine",
+     "Mawlid, moussem, magal and urs: the yearly festivals at saints' tombs."),
+]
+# which observances belong with which tradition (sect key -> observance keys)
+SECT_OBSERVANCES = {
+    "barelvi": ["urs", "mawlid", "sufi_shrine_festivals"],
+    "sufi": ["urs", "mawlid", "sufi_shrine_festivals"],
+    "twelver": ["mawlid", "shia_commemorations"],
+    "alevi": ["shia_commemorations"],
+}

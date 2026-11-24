@@ -53,16 +53,17 @@ GOLD_DEEP = "#a8792a"   # gold in shade (rules, bevel)
 # Holiday kinds shared with holidays.py: dark ink on pastel chips.
 CHIP = {
     "eid": "#efcd6e", "sacred": "#bccff5", "fast": "#e4d7b2", "night": "#d0caf0", "mourning": "#c5c9d3",
-    "birth": "#bfe3b4", "month": "#a9e0d8", "hajj": "#f2c6b0", "civil": "#e9e0c9",
+    "birth": "#bfe3b4", "shrine": "#f1c8dc", "month": "#a9e0d8", "hajj": "#f2c6b0", "civil": "#e9e0c9",
 }
 KIND_LABEL = {
     "eid": "Eid (festival)", "sacred": "Holy day", "fast": "Fast", "night": "Holy night",
-    "mourning": "Day of mourning", "birth": "Birth (mawlid)", "month": "New month", "hajj": "Days of the Hajj",
+    "mourning": "Day of mourning", "birth": "Birth (mawlid)", "shrine": "Urs or shrine festival",
+    "month": "New month", "hajj": "Days of the Hajj",
     "civil": "Solar Hijri day",
 }
 KIND_AR = {
     "eid": "عيد", "sacred": "مناسبة دينية", "fast": "صيام", "night": "ليلة مباركة", "mourning": "عزاء",
-    "birth": "مولد", "month": "غرة الشهر", "hajj": "أيام الحج", "civil": "التقويم الشمسي",
+    "birth": "مولد", "shrine": "عرس ومولد الأولياء", "month": "غرة الشهر", "hajj": "أيام الحج", "civil": "التقويم الشمسي",
 }
 BRANCH_LABEL = {"sunni": ("Sunni", "سنّي"), "shia": ("Shia", "شيعي")}
 
@@ -190,6 +191,9 @@ h1, h2, h3, h4 {{ font-family: {SERIF}; color: {GOLD}; }}
 .tq-times th {{ position: sticky; top: 0; background: {SIDEBAR}; color: {GOLD}; z-index: 1; }}
 .tq-times th, .tq-times td {{ padding: .3rem .55rem; text-align: left; border-bottom: 1px solid rgba(235,194,95,.18); color: {TEXT}; }}
 .tq-times tr.tq-today-row td {{ background: #24356c; color: #ffffff; font-weight: 700; }}
+.tq-obs-row {{ display: flex; flex-wrap: wrap; gap: .35rem .5rem; align-items: center; margin: .35rem 0 .1rem 0; }}
+.tq-obs-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .55rem .9rem; margin-top: .4rem; }}
+.tq-obs-grid > div {{ color: {MUTED}; font-size: .9rem; }}
 .tq-moon {{ display: inline-block; vertical-align: middle; line-height: 0; }}
 a {{ color: {LINK}; }}
 @media (pointer: coarse) {{

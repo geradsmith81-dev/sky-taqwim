@@ -150,6 +150,33 @@ The switch at the top changes:
 
 Every choice can still be changed in the settings.
 
+### 3b. Urs, shrine festivals and commemorations · الأعراس والموالد والمناسبات
+
+The switch **Urs and Sufi shrine festivals** (Shia: **Urs, shrine festivals and more commemorations**) under Holy
+days adds dated observances beyond the main holy days. Each name opens a short sourced summary.
+
+- **Urs and shrine festivals (both traditions):**
+  - Baba Farid, Pakpattan (5 Muharram, opening of the Gate of Paradise).
+  - Shah Abdul Latif Bhittai, Bhit Shah (14 Safar).
+  - Grand Magal of Touba (18 Safar).
+  - Data Ganj Bakhsh, Lahore (18 Safar).
+  - Gyarhvin Sharif for Abd al-Qadir al-Jilani (11 Rabi' al-Thani).
+  - Nizamuddin Awliya, Delhi (18 Rabi' al-Thani).
+  - Khwaja Mu'in al-Din Chishti, Ajmer (6 Rajab).
+  - Lal Shahbaz Qalandar, Sehwan (18 Sha'ban).
+  - Rumi's Seb-i Arus, Konya (17 December, a civil date).
+- **Further Shia commemorations:**
+  - Fatima al-Ma'suma: death (10 Rabi' al-Thani) and birth (1 Dhu al-Qa'dah).
+  - Zaynab (15 Rajab).
+  - Khadija (10 Ramadan).
+  - Yawm al-Hadm, the demolition of al-Baqi' (8 Shawwal).
+  - Muslim ibn Aqil (9 Dhu al-Hijjah).
+
+The dates were checked against the shrines' announcements and news reports (November 2026). Each shrine follows
+its own country's moon sighting, so its date can differ by a day from the calendar shown. The Traditions page links
+short summaries of the urs, the Mawlid, Shia commemorations and Sufi shrine festivals, and shows them beside the
+traditions that keep them.
+
 ### 4. Prayer times and the qibla · المواقيت والقبلة
 
 Each prayer time is the moment the Sun reaches a set angle below the horizon at your coordinates. Dhuhr is when

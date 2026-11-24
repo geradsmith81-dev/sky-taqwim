@@ -191,6 +191,15 @@ h1, h2, h3, h4 {{ font-family: {SERIF}; color: {GOLD}; }}
 .tq-times th {{ position: sticky; top: 0; background: {SIDEBAR}; color: {GOLD}; z-index: 1; }}
 .tq-times th, .tq-times td {{ padding: .3rem .55rem; text-align: left; border-bottom: 1px solid rgba(235,194,95,.18); color: {TEXT}; }}
 .tq-times tr.tq-today-row td {{ background: #24356c; color: #ffffff; font-weight: 700; }}
+.tq-card {{ max-width: 100%; box-sizing: border-box; overflow-wrap: break-word; }}
+.tq-hscroll {{ overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }}
+.tq-hscroll > table {{ min-width: 100%; }}
+.tq-evs {{ margin: .3rem 0; }}
+.tq-ev {{ border-top: 1px solid rgba(235,194,95,.30); padding: .4rem 0 .3rem 0; }}
+.tq-ev-h {{ font-weight: 700; color: {GOLD}; }}
+.tq-ev dl {{ display: grid; grid-template-columns: minmax(7.5rem, auto) 1fr; gap: .1rem .7rem; margin: .2rem 0 0 0; }}
+.tq-ev dt {{ color: {MUTED}; font-size: .88rem; }}
+.tq-ev dd {{ margin: 0; color: {TEXT}; }}
 .tq-obs-row {{ display: flex; flex-wrap: wrap; gap: .35rem .5rem; align-items: center; margin: .35rem 0 .1rem 0; }}
 .tq-obs-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .55rem .9rem; margin-top: .4rem; }}
 .tq-obs-grid > div {{ color: {MUTED}; font-size: .9rem; }}

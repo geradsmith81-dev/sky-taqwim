@@ -434,15 +434,12 @@ def _month_began(ctx, view, m):
                 vd = "visible by the rule in use" if visible(info, ctx["crit"]) else "not visible by the rule in use"
             vd = "passes the rule in use" if visible(info, ctx["crit"]) else "does not pass the rule in use"
             alt0, el0 = info.get("moon_alt_sunset"), info.get("elong_sunset_topo")
-            rows.append(f"<tr><td>{e:%a %d %b}</td><td>{qtxt}</td><td>{vtxt}</td><td>{info['lag_min']:.0f}</td>"
-                        f"<td>{info['age_h']:.1f}</td>"
-                        f"<td>{'-' if alt0 is None or alt0 != alt0 else f'{alt0:.1f}°'}</td>"
-                        f"<td>{'-' if el0 is None or el0 != el0 else f'{el0:.1f}°'}</td><td>{esc(vd)}</td></tr>")
+            rows.append([f"{e:%a %d %b}", qtxt, vtxt, f"{info['lag_min']:.0f}", f"{info['age_h']:.1f}",
+                         '-' if alt0 is None or alt0 != alt0 else f'{alt0:.1f}°',
+                         '-' if el0 is None or el0 != el0 else f'{el0:.1f}°', esc(vd)])
         if rows:
-            body += ("<table class='tq-table'><tr><th>Evening</th><th>Yallop q</th><th>Odeh V</th><th>Moon sets after "
-                     "the Sun (min)</th><th>Moon age (h)</th><th>Moon height at sunset</th><th>Elongation at sunset</th>"
-                     "<th>Verdict</th></tr>"
-                     + "".join(rows) + "</table>")
+            body += fit_table(["Evening", "Yallop q", "Odeh V", "Moon sets after the Sun (min)", "Moon age (h)",
+                               "Moon height at sunset", "Elongation at sunset", "Verdict"], rows)
         body += f"<div class='tq-muted'>Rule in use: {esc(sc.CRITERIA[ctx['crit']])}, seen {esc(view.detail.split(',')[0])}.</div>"
         st.html(card(ttl("How this month began", "رؤية الهلال"), body))
     elif view.key == cv.TABULAR:
@@ -646,18 +643,16 @@ def render_crescent(ctx):
     for e, r in zip(evenings, mine):
         if r is None:
             continue
+        sset = t12(pd.Timestamp(r['sunset_utc']).to_pydatetime().astimezone(tz))
         if pd.isna(r.get("q")):
-            rows.append(f"<tr><td>{e:%a %d %b}</td><td>{t12(pd.Timestamp(r['sunset_utc']).to_pydatetime().astimezone(tz))}</td>"
-                        f"<td colspan=6 class='tq-muted'>{esc(verdict(r))}</td></tr>")
+            rows.append((f"{e:%a %d %b}", f"Sunset {sset}. {esc(verdict(r))}"))
             continue
-        rows.append(f"<tr><td>{e:%a %d %b}</td><td>{t12(pd.Timestamp(r['sunset_utc']).to_pydatetime().astimezone(tz))}</td>"
-                    f"<td>{r['lag_min']:.0f}</td><td>{r['age_h']:.1f}</td><td>{r['arcl']:.1f}°</td>"
-                    f"<td>{r['arcv']:.1f}°</td><td>{r['w']:.2f}′</td><td>{esc(verdict(r))}</td></tr>")
+        rows.append([f"{e:%a %d %b}", sset, f"{r['lag_min']:.0f}", f"{r['age_h']:.1f}", f"{r['arcl']:.1f}°",
+                     f"{r['arcv']:.1f}°", f"{r['w']:.2f}′", esc(verdict(r))])
     if rows:
         st.html(card(ttl(f"From {place['label']}", "من مكانك"),
-                     "<table class='tq-table'><tr><th>Evening</th><th>Sunset</th><th>Moon sets after the Sun (min)</th>"
-                     "<th>Moon age (h)</th><th>Elongation</th><th>Moon above Sun</th><th>Crescent width</th>"
-                     "<th>Verdict</th></tr>" + "".join(rows) + "</table>"
+                     fit_table(["Evening", "Sunset", "Moon sets after the Sun (min)", "Moon age (h)", "Elongation",
+                                "Moon above Sun", "Crescent width", "Verdict"], rows) +
                      "<div class='tq-muted'>Measured at the 'best time', sunset plus 4/9 of the time until moonset "
                      "(Yallop). Elongation: the Moon's angular distance from the Sun. Haze, cloud and the observer's "
                      "eyesight matter as much as the geometry.</div>"))
@@ -684,7 +679,7 @@ def render_compare(ctx):
     ref = V[cv.UMMALQURA]
 
     def dfmt(d):
-        return d.strftime("%a %d %b %Y") if d else "—"
+        return d.strftime("%d %b %y" if device.phone() else "%a %d %b %Y") if d else "—"
 
     def dcell(d, r):
         if d is None or r is None:
@@ -700,7 +695,8 @@ def render_compare(ctx):
         r = ref.cal.to_gregorian(y, mo, d)
         rows.append(f"<tr><td>{esc(name)} <span class='tq-muted'>({d} {an.MONTHS[mo][0]})</span></td>"
                     f"<td>{dfmt(r)}</td>" + "".join(dcell(v.cal.to_gregorian(y, mo, d), r) for v in lun[1:]) + "</tr>")
-    st.html("<h4 style='margin:0'>Holy days · المناسبات</h4><table class='tq-table'>" + head + "".join(rows) + "</table>")
+    st.html("<h4 style='margin:0'>Holy days · المناسبات</h4><div class='tq-hscroll'><table class='tq-table'>" + head
+            + "".join(rows) + "</table></div>")
     mrows = []
     for mo in range(1, 13):
         r = ref.get_month(y, mo)
@@ -709,8 +705,8 @@ def render_compare(ctx):
             om = v.get_month(y, mo)
             cells += dcell(om.start if om else None, r.start if r else None)
         mrows.append(f"<tr><td>{an.month_bi(mo)}</td>{cells}</tr>")
-    st.html("<h4 style='margin:.6rem 0 0 0'>First day of each month · أوائل الشهور</h4><table class='tq-table'>" + head
-            + "".join(mrows) + "</table>")
+    st.html("<h4 style='margin:.6rem 0 0 0'>First day of each month · أوائل الشهور</h4><div class='tq-hscroll'>"
+            "<table class='tq-table'>" + head + "".join(mrows) + "</table></div>")
     why = [
         "Umm al-Qura starts a month when, on the 29th, the new moon comes before sunset at Mecca and the Moon sets "
         "after the Sun. The crescent then is often too thin and low to be seen, so Umm al-Qura is usually a day "
@@ -794,6 +790,25 @@ def observance_chips(keys, align_right_from: int = 99) -> str:
         if o:
             out.append(hh.clickable(k, theme.chip(o[3], o[1], o[2]), align_right=i >= align_right_from))
     return "".join(out)
+
+
+def fit_table(headers: list, rows: list) -> str:
+    """A table that fits the screen. rows: lists of cell HTML (same length as headers), or
+    (first_cell, note_html) for a row whose other cells are one note. On a phone each row becomes a small block of
+    label: value pairs; on a computer it is a table inside a box that scrolls sideways if space runs short."""
+    if device.phone():
+        out = []
+        for r in rows:
+            if isinstance(r, tuple):
+                out.append(f"<div class='tq-ev'><div class='tq-ev-h'>{r[0]}</div><div class='tq-muted'>{r[1]}</div></div>")
+                continue
+            pairs = "".join(f"<dt>{h}</dt><dd>{c}</dd>" for h, c in zip(headers[1:], r[1:]))
+            out.append(f"<div class='tq-ev'><div class='tq-ev-h'>{r[0]}</div><dl>{pairs}</dl></div>")
+        return "<div class='tq-evs'>" + "".join(out) + "</div>"
+    head = "<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"
+    body = "".join(f"<tr><td>{r[0]}</td><td colspan={len(headers) - 1} class='tq-muted'>{r[1]}</td></tr>"
+                   if isinstance(r, tuple) else "<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
+    return f"<div class='tq-hscroll'><table class='tq-table'>{head}{body}</table></div>"
 
 
 def render_traditions(ctx):
